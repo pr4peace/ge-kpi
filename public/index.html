@@ -137,13 +137,62 @@
     /* Loading state */
     .loading { text-align: center; padding: 40px; color: #b8a888; font-size: 14px; }
     .error-msg { background: #fdf0f0; border: 1px solid #f0c8c8; border-radius: 6px; padding: 16px; color: #c0392b; font-size: 14px; }
+
+    /* Insights strip */
+    .insights-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+    .insight-card {
+      background: #fff;
+      border: 1px solid #e8dcc8;
+      border-radius: 6px;
+      padding: 14px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .insight-card .ins-label { font-size: 11px; color: #b8a888; text-transform: uppercase; letter-spacing: 0.5px; }
+    .insight-card .ins-value { font-size: 22px; font-weight: 700; color: #3a3028; }
+    .insight-card .ins-value.green { color: #5a9a5a; }
+    .insight-card .ins-value.amber { color: #d48a20; }
+    .insight-card .ins-sub { font-size: 12px; color: #b8a888; }
+
+    /* Charts row */
+    .charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+    @media (max-width: 700px) { .charts-row { grid-template-columns: 1fr; } }
+
+    /* Spend bar per project */
+    .spend-bars { background: #fff; border: 1px solid #e8dcc8; border-radius: 6px; padding: 20px 24px; margin-bottom: 16px; }
+    .spend-bar-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .spend-bar-row:last-child { margin-bottom: 0; }
+    .spend-bar-label { width: 68px; font-size: 13px; font-weight: 600; color: #3a3028; flex-shrink: 0; }
+    .spend-bar-track { flex: 1; height: 22px; background: #f0e8d8; border-radius: 4px; overflow: hidden; position: relative; }
+    .spend-bar-fill { height: 100%; border-radius: 4px; background: #8b6914; transition: width 0.6s ease; }
+    .spend-bar-fill.near-full { background: #c0392b; }
+    .spend-bar-nums { font-size: 11px; color: #b8a888; white-space: nowrap; flex-shrink: 0; width: 120px; text-align: right; }
+
+    /* Raw data toggle */
+    .raw-toggle { margin-top: 20px; }
+    .raw-toggle summary {
+      cursor: pointer; list-style: none; display: inline-flex; align-items: center; gap: 6px;
+      font-size: 12px; color: #b8a888; border: 1px solid #e8dcc8; border-radius: 4px;
+      padding: 5px 12px; background: #fff; user-select: none;
+    }
+    .raw-toggle summary:hover { color: #8b6914; border-color: #8b6914; }
+    .raw-toggle[open] summary { color: #8b6914; border-color: #8b6914; }
   </style>
 </head>
 <body>
 
 <header class="site-header">
   <h1>GoodEarth &mdash; KPI Dashboard</h1>
-  <span class="updated" id="last-updated">Loading&hellip;</span>
+  <div style="display:flex;align-items:center;gap:16px">
+    <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_4f1jTZ3RY__MgbS2YrcGgxXYK-Q9UfM5IEqIy-Zsra6Lm4nKGBjfNPLqVnlZxREethc9lU86JIHS/pubhtml" target="_blank" rel="noopener" style="font-size:12px;color:#8b6914;text-decoration:none;border:1px solid #e8dcc8;border-radius:4px;padding:4px 10px;background:#fff;">↗ Source Sheet</a>
+    <span class="updated" id="last-updated">Loading&hellip;</span>
+  </div>
 </header>
 
 <main>
@@ -204,7 +253,6 @@ async function loadDashboard() {
     const res = await fetch('/api/data');
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
-
     document.getElementById('last-updated').textContent = `Last updated: ${data.lastUpdated}`;
     renderInternalProjects(data.internalProjects, container);
   } catch (err) {
@@ -212,120 +260,215 @@ async function loadDashboard() {
   }
 }
 
-function fmt(n) {
-  return typeof n === 'number' ? n.toFixed(2) : n;
-}
+const fmt  = n => typeof n === 'number' ? n.toFixed(2) : String(n);
+const fmtC = n => typeof n === 'number' ? (n < 0 ? `−₹${Math.abs(n).toFixed(2)}` : `+₹${n.toFixed(2)}`) : '';
+const pct  = (spent, balance) => { const t = spent + balance; return t > 0 ? Math.round((spent / t) * 100) : 0; };
 
-function pct(spent, balance) {
-  const total = spent + balance;
-  return total > 0 ? Math.round((spent / total) * 100) : 0;
+function calcProject(p) {
+  const b    = p.financial.building || {};
+  const infra = p.financial.infra   || {};
+  const totalSpent   = (b.spent   || 0) + (infra.spent   || 0);
+  const totalBalance = (b.balance || 0) + (infra.balance || 0);
+  const totalBudget  = totalSpent + totalBalance;
+  const totalSavings = (b.impactCr || 0) + (infra.impactCr || 0); // negative = saved
+  const utilPct      = pct(totalSpent, totalBalance);
+  return { totalSpent, totalBalance, totalBudget, totalSavings, utilPct };
 }
 
 function renderInternalProjects(projects, container) {
+  // ── Portfolio-level calculations ──────────────────────────────
+  const calcs         = projects.map(calcProject);
+  const portSpent     = calcs.reduce((s, c) => s + c.totalSpent,   0);
+  const portBudget    = calcs.reduce((s, c) => s + c.totalBudget,  0);
+  const portSavings   = calcs.reduce((s, c) => s + c.totalSavings, 0);
+  const portRemaining = portBudget - portSpent;
+  const underBudget   = projects.filter(p => p.status === 'green').length;
+  const mostAdvanced  = projects[calcs.indexOf(calcs.reduce((a, b) => a.utilPct > b.utilPct ? a : b))];
+  const mostRemaining = projects[calcs.indexOf(calcs.reduce((a, b) => a.totalBalance > b.totalBalance ? a : b))];
+
   const html = [];
 
-  // Health card strip
-  html.push('<div class="cards-grid">');
-  for (const p of projects) {
-    const totalSpent = (p.financial.building?.spent || 0) + (p.financial.infra?.spent || 0);
-    const totalBalance = (p.financial.building?.balance || 0) + (p.financial.infra?.balance || 0);
-    const utilPct = pct(totalSpent, totalBalance);
+  // ── 1. Portfolio insight cards ─────────────────────────────────
+  html.push(`<div class="insights-strip">`);
+  html.push(insightCard('Portfolio Budget', `₹${fmt(portBudget)} Cr`, 'across all 4 projects'));
+  html.push(insightCard('Total Spent', `₹${fmt(portSpent)} Cr`, `${Math.round((portSpent/portBudget)*100)}% utilised`));
+  html.push(insightCard('Remaining', `₹${fmt(portRemaining)} Cr`, 'uncommitted budget'));
+  html.push(insightCard('Total Savings', `${portSavings <= 0 ? '−' : '+'}₹${Math.abs(portSavings).toFixed(2)} Cr`,
+    portSavings <= 0 ? 'under budget — great' : 'cost overrun', portSavings <= 0 ? 'green' : 'amber'));
+  html.push(insightCard('Under Budget', `${underBudget} / ${projects.length}`, 'projects on track', underBudget === projects.length ? 'green' : 'amber'));
+  html.push(insightCard('Most Advanced', mostAdvanced.name, `${calcs[projects.indexOf(mostAdvanced)].utilPct}% budget used`));
+  html.push(`</div>`);
+
+  // ── 2. Project health cards ────────────────────────────────────
+  html.push(`<div class="cards-grid">`);
+  projects.forEach((p, i) => {
+    const { totalSpent, totalBudget, totalSavings, utilPct } = calcs[i];
+    const b    = p.financial.building || {};
+    const infra = p.financial.infra   || {};
+    const bSave  = b.impactCr    || 0;
+    const iSave  = infra.impactCr || 0;
     html.push(`
       <div class="project-card">
-        <div class="project-name">
-          <span class="rag-dot ${p.status}"></span>${p.name}
-        </div>
+        <div class="project-name"><span class="rag-dot ${p.status}"></span>${p.name}</div>
         <div class="stat-label">Total Spent</div>
         <div class="stat-value">₹${fmt(totalSpent)} Cr</div>
-        <div class="stat-sub">of ₹${fmt(totalSpent + totalBalance)} Cr budget</div>
+        <div class="stat-sub">of ₹${fmt(totalBudget)} Cr budget</div>
         <div class="progress-wrap">
           <div class="progress-label"><span>Utilisation</span><span>${utilPct}%</span></div>
-          <div class="progress-bar"><div class="progress-bar-fill" style="width:${utilPct}%"></div></div>
+          <div class="progress-bar"><div class="progress-bar-fill${utilPct >= 95 ? ' near-full' : ''}" style="width:${utilPct}%"></div></div>
+        </div>
+        <div style="margin-top:12px;display:flex;gap:8px;">
+          <div style="flex:1;background:#f5f2eb;border-radius:4px;padding:7px 10px;font-size:11px;">
+            <div style="color:#b8a888;text-transform:uppercase;letter-spacing:.4px;margin-bottom:2px">Building</div>
+            <div class="${bSave <= 0 ? 'positive' : 'negative'}" style="font-weight:700;font-size:13px">${fmtC(bSave)} Cr</div>
+          </div>
+          <div style="flex:1;background:#f5f2eb;border-radius:4px;padding:7px 10px;font-size:11px;">
+            <div style="color:#b8a888;text-transform:uppercase;letter-spacing:.4px;margin-bottom:2px">Infra</div>
+            <div class="${iSave <= 0 ? 'positive' : 'negative'}" style="font-weight:700;font-size:13px">${fmtC(iSave)} Cr</div>
+          </div>
         </div>
       </div>
     `);
-  }
-  html.push('</div>');
+  });
+  html.push(`</div>`);
 
-  // Detailed breakdown per project
-  for (const p of projects) {
-    const b = p.financial.building;
-    const infra = p.financial.infra;
-    html.push(`
-      <details open style="margin-bottom:20px">
-        <summary style="cursor:pointer;font-weight:600;color:#8b6914;padding:10px 0;list-style:none;border-bottom:1px solid #e8dcc8">
-          ${p.name} — Financial Detail
-        </summary>
-        <table class="detail-table">
-          <thead>
-            <tr>
-              <th>Category</th>
-              <th>Spent (Cr)</th>
-              <th>Balance (Cr)</th>
-              <th>Budget /sft</th>
-              <th>Projected /sft</th>
-              <th>Impact /sft</th>
-              <th>Impact (Cr)</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${b ? `<tr>
-              <td>Building</td>
-              <td>₹${fmt(b.spent)}</td>
-              <td>₹${fmt(b.balance)}</td>
-              <td>₹${fmt(b.budgetPerSft)}</td>
-              <td>₹${fmt(b.projectedPerSft)}</td>
-              <td class="${b.impactPerSft <= 0 ? 'positive' : 'negative'}">${b.impactPerSft > 0 ? '+' : ''}${fmt(b.impactPerSft)}</td>
-              <td class="${b.impactCr <= 0 ? 'positive' : 'negative'}">${b.impactCr > 0 ? '+' : ''}${fmt(b.impactCr)}</td>
-            </tr>` : ''}
-            ${infra ? `<tr>
-              <td>Infra</td>
-              <td>₹${fmt(infra.spent)}</td>
-              <td>₹${fmt(infra.balance)}</td>
-              <td>₹${fmt(infra.budgetPerSft)}</td>
-              <td>₹${fmt(infra.projectedPerSft)}</td>
-              <td class="${infra.impactPerSft <= 0 ? 'positive' : 'negative'}">${infra.impactPerSft > 0 ? '+' : ''}${fmt(infra.impactPerSft)}</td>
-              <td class="${infra.impactCr <= 0 ? 'positive' : 'negative'}">${infra.impactCr > 0 ? '+' : ''}${fmt(infra.impactCr)}</td>
-            </tr>` : ''}
-          </tbody>
-        </table>
-      </details>
-    `);
-  }
-
-  // Chart: Budget vs Projected per sft (building only)
+  // ── 3. Spend utilisation bars ──────────────────────────────────
   html.push(`
-    <div class="chart-wrap">
-      <div class="chart-title">Budget vs Projected — Building Cost per sft</div>
-      <canvas id="cost-chart" height="80"></canvas>
+    <div class="spend-bars chart-wrap" style="margin-bottom:16px">
+      <div class="chart-title">Budget Utilisation by Project</div>
+  `);
+  projects.forEach((p, i) => {
+    const { totalSpent, totalBudget, utilPct } = calcs[i];
+    html.push(`
+      <div class="spend-bar-row">
+        <div class="spend-bar-label">${p.name}</div>
+        <div class="spend-bar-track">
+          <div class="spend-bar-fill${utilPct >= 95 ? ' near-full' : ''}" style="width:${utilPct}%"></div>
+        </div>
+        <div class="spend-bar-nums">₹${fmt(totalSpent)} / ₹${fmt(totalBudget)} Cr</div>
+      </div>
+    `);
+  });
+  html.push(`</div>`);
+
+  // ── 4. Charts row ──────────────────────────────────────────────
+  html.push(`
+    <div class="charts-row">
+      <div class="chart-wrap">
+        <div class="chart-title">Building Cost /sft — Budget vs Projected</div>
+        <canvas id="chart-building" height="120"></canvas>
+      </div>
+      <div class="chart-wrap">
+        <div class="chart-title">Infra Cost /sft — Budget vs Projected</div>
+        <canvas id="chart-infra" height="120"></canvas>
+      </div>
+    </div>
+    <div class="chart-wrap" style="margin-bottom:16px">
+      <div class="chart-title">Savings / Overrun by Project (₹ Cr) — negative = saved</div>
+      <canvas id="chart-savings" height="70"></canvas>
     </div>
   `);
 
+  // ── 5. Raw data (collapsed) ────────────────────────────────────
+  html.push(`<details class="raw-toggle"><summary>▸ Show raw data</summary>`);
+  for (const p of projects) {
+    const b    = p.financial.building;
+    const infra = p.financial.infra;
+    html.push(`
+      <div style="margin-top:16px">
+        <div style="font-weight:600;color:#8b6914;padding:8px 0;border-bottom:1px solid #e8dcc8;margin-bottom:4px">${p.name}</div>
+        <table class="detail-table">
+          <thead><tr>
+            <th>Category</th><th>Spent (Cr)</th><th>Balance (Cr)</th>
+            <th>Budget /sft</th><th>Projected /sft</th><th>Impact /sft</th><th>Impact (Cr)</th>
+          </tr></thead>
+          <tbody>
+            ${b ? `<tr>
+              <td>Building</td><td>₹${fmt(b.spent)}</td><td>₹${fmt(b.balance)}</td>
+              <td>₹${fmt(b.budgetPerSft)}</td><td>₹${fmt(b.projectedPerSft)}</td>
+              <td class="${b.impactPerSft<=0?'positive':'negative'}">${b.impactPerSft>0?'+':''}${fmt(b.impactPerSft)}</td>
+              <td class="${b.impactCr<=0?'positive':'negative'}">${b.impactCr>0?'+':''}${fmt(b.impactCr)}</td>
+            </tr>` : ''}
+            ${infra ? `<tr>
+              <td>Infra</td><td>₹${fmt(infra.spent)}</td><td>₹${fmt(infra.balance)}</td>
+              <td>₹${fmt(infra.budgetPerSft)}</td><td>₹${fmt(infra.projectedPerSft)}</td>
+              <td class="${infra.impactPerSft<=0?'positive':'negative'}">${infra.impactPerSft>0?'+':''}${fmt(infra.impactPerSft)}</td>
+              <td class="${infra.impactCr<=0?'positive':'negative'}">${infra.impactCr>0?'+':''}${fmt(infra.impactCr)}</td>
+            </tr>` : ''}
+          </tbody>
+        </table>
+      </div>
+    `);
+  }
+  html.push(`</details>`);
+
   container.innerHTML = html.join('');
 
-  // Render chart after DOM update
-  const labels = projects.map(p => p.name);
-  const budgets = projects.map(p => p.financial.building?.budgetPerSft || 0);
-  const projected = projects.map(p => p.financial.building?.projectedPerSft || 0);
+  // ── Render charts ──────────────────────────────────────────────
+  const labels    = projects.map(p => p.name);
+  const chartOpts = (yLabel) => ({
+    responsive: true,
+    plugins: { legend: { position: 'top', labels: { boxWidth: 12, font: { size: 11 } } } },
+    scales: {
+      y: { grid: { color: '#f0e8d8' }, ticks: { callback: v => '₹' + v } },
+      x: { grid: { display: false } },
+    },
+  });
 
-  new Chart(document.getElementById('cost-chart'), {
+  new Chart(document.getElementById('chart-building'), {
     type: 'bar',
     data: {
       labels,
       datasets: [
-        { label: 'Budget /sft (₹)', data: budgets, backgroundColor: '#d4c4a0', borderRadius: 4 },
-        { label: 'Projected /sft (₹)', data: projected, backgroundColor: '#8b6914', borderRadius: 4 },
+        { label: 'Budget /sft', data: projects.map(p => p.financial.building?.budgetPerSft || 0), backgroundColor: '#d4c4a0', borderRadius: 4 },
+        { label: 'Projected /sft', data: projects.map(p => p.financial.building?.projectedPerSft || 0), backgroundColor: '#8b6914', borderRadius: 4 },
       ],
+    },
+    options: { ...chartOpts(), scales: { y: { beginAtZero: false, grid: { color: '#f0e8d8' }, ticks: { callback: v => '₹'+v } }, x: { grid: { display: false } } } },
+  });
+
+  new Chart(document.getElementById('chart-infra'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        { label: 'Budget /sft', data: projects.map(p => p.financial.infra?.budgetPerSft || 0), backgroundColor: '#d4c4a0', borderRadius: 4 },
+        { label: 'Projected /sft', data: projects.map(p => p.financial.infra?.projectedPerSft || 0), backgroundColor: '#8b6914', borderRadius: 4 },
+      ],
+    },
+    options: { ...chartOpts(), scales: { y: { beginAtZero: false, grid: { color: '#f0e8d8' }, ticks: { callback: v => '₹'+v } }, x: { grid: { display: false } } } },
+  });
+
+  // Savings chart — green for savings, red for overruns
+  const savingsData = projects.map(p => +((p.financial.building?.impactCr || 0) + (p.financial.infra?.impactCr || 0)).toFixed(2));
+  new Chart(document.getElementById('chart-savings'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Net Impact (Cr)',
+        data: savingsData,
+        backgroundColor: savingsData.map(v => v <= 0 ? '#5a9a5a' : '#c0392b'),
+        borderRadius: 4,
+      }],
     },
     options: {
       responsive: true,
-      plugins: { legend: { position: 'top' } },
+      plugins: { legend: { display: false } },
       scales: {
-        y: { beginAtZero: false, grid: { color: '#f0e8d8' } },
+        y: { grid: { color: '#f0e8d8' }, ticks: { callback: v => '₹'+v+' Cr' } },
         x: { grid: { display: false } },
       },
     },
   });
+}
+
+function insightCard(label, value, sub, colorClass = '') {
+  return `<div class="insight-card">
+    <div class="ins-label">${label}</div>
+    <div class="ins-value ${colorClass}">${value}</div>
+    <div class="ins-sub">${sub}</div>
+  </div>`;
 }
 
 loadDashboard();
