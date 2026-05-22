@@ -196,7 +196,139 @@
 </main>
 
 <script>
-  // Live data rendering added in Task 6
+'use strict';
+
+async function loadDashboard() {
+  const container = document.getElementById('internal-content');
+  try {
+    const res = await fetch('/api/data');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+
+    document.getElementById('last-updated').textContent = `Last updated: ${data.lastUpdated}`;
+    renderInternalProjects(data.internalProjects, container);
+  } catch (err) {
+    container.innerHTML = `<div class="error-msg">Failed to load data: ${err.message}</div>`;
+  }
+}
+
+function fmt(n) {
+  return typeof n === 'number' ? n.toFixed(2) : n;
+}
+
+function pct(spent, balance) {
+  const total = spent + balance;
+  return total > 0 ? Math.round((spent / total) * 100) : 0;
+}
+
+function renderInternalProjects(projects, container) {
+  const html = [];
+
+  // Health card strip
+  html.push('<div class="cards-grid">');
+  for (const p of projects) {
+    const totalSpent = (p.financial.building?.spent || 0) + (p.financial.infra?.spent || 0);
+    const totalBalance = (p.financial.building?.balance || 0) + (p.financial.infra?.balance || 0);
+    const utilPct = pct(totalSpent, totalBalance);
+    html.push(`
+      <div class="project-card">
+        <div class="project-name">
+          <span class="rag-dot ${p.status}"></span>${p.name}
+        </div>
+        <div class="stat-label">Total Spent</div>
+        <div class="stat-value">₹${fmt(totalSpent)} Cr</div>
+        <div class="stat-sub">of ₹${fmt(totalSpent + totalBalance)} Cr budget</div>
+        <div class="progress-wrap">
+          <div class="progress-label"><span>Utilisation</span><span>${utilPct}%</span></div>
+          <div class="progress-bar"><div class="progress-bar-fill" style="width:${utilPct}%"></div></div>
+        </div>
+      </div>
+    `);
+  }
+  html.push('</div>');
+
+  // Detailed breakdown per project
+  for (const p of projects) {
+    const b = p.financial.building;
+    const infra = p.financial.infra;
+    html.push(`
+      <details open style="margin-bottom:20px">
+        <summary style="cursor:pointer;font-weight:600;color:#8b6914;padding:10px 0;list-style:none;border-bottom:1px solid #e8dcc8">
+          ${p.name} — Financial Detail
+        </summary>
+        <table class="detail-table">
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th>Spent (Cr)</th>
+              <th>Balance (Cr)</th>
+              <th>Budget /sft</th>
+              <th>Projected /sft</th>
+              <th>Impact /sft</th>
+              <th>Impact (Cr)</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${b ? `<tr>
+              <td>Building</td>
+              <td>₹${fmt(b.spent)}</td>
+              <td>₹${fmt(b.balance)}</td>
+              <td>₹${fmt(b.budgetPerSft)}</td>
+              <td>₹${fmt(b.projectedPerSft)}</td>
+              <td class="${b.impactPerSft <= 0 ? 'positive' : 'negative'}">${b.impactPerSft > 0 ? '+' : ''}${fmt(b.impactPerSft)}</td>
+              <td class="${b.impactCr <= 0 ? 'positive' : 'negative'}">${b.impactCr > 0 ? '+' : ''}${fmt(b.impactCr)}</td>
+            </tr>` : ''}
+            ${infra ? `<tr>
+              <td>Infra</td>
+              <td>₹${fmt(infra.spent)}</td>
+              <td>₹${fmt(infra.balance)}</td>
+              <td>₹${fmt(infra.budgetPerSft)}</td>
+              <td>₹${fmt(infra.projectedPerSft)}</td>
+              <td class="${infra.impactPerSft <= 0 ? 'positive' : 'negative'}">${infra.impactPerSft > 0 ? '+' : ''}${fmt(infra.impactPerSft)}</td>
+              <td class="${infra.impactCr <= 0 ? 'positive' : 'negative'}">${infra.impactCr > 0 ? '+' : ''}${fmt(infra.impactCr)}</td>
+            </tr>` : ''}
+          </tbody>
+        </table>
+      </details>
+    `);
+  }
+
+  // Chart: Budget vs Projected per sft (building only)
+  html.push(`
+    <div class="chart-wrap">
+      <div class="chart-title">Budget vs Projected — Building Cost per sft</div>
+      <canvas id="cost-chart" height="80"></canvas>
+    </div>
+  `);
+
+  container.innerHTML = html.join('');
+
+  // Render chart after DOM update
+  const labels = projects.map(p => p.name);
+  const budgets = projects.map(p => p.financial.building?.budgetPerSft || 0);
+  const projected = projects.map(p => p.financial.building?.projectedPerSft || 0);
+
+  new Chart(document.getElementById('cost-chart'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        { label: 'Budget /sft (₹)', data: budgets, backgroundColor: '#d4c4a0', borderRadius: 4 },
+        { label: 'Projected /sft (₹)', data: projected, backgroundColor: '#8b6914', borderRadius: 4 },
+      ],
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'top' } },
+      scales: {
+        y: { beginAtZero: false, grid: { color: '#f0e8d8' } },
+        x: { grid: { display: false } },
+      },
+    },
+  });
+}
+
+loadDashboard();
 </script>
 
 </body>
