@@ -4,13 +4,13 @@
 Phase 1 — Build and deploy the live financial dashboard.
 
 ## Last Action
-Claude (2026-05-22): Created spec and implementation plan. Project scaffolded and pushed to GitHub.
+Gemini (2026-05-22): Phase 1 frontend complete. Tasks 1–7 done. All 18 tests passing. Dashboard verified locally — 4 project cards live, financial tables, Chart.js bar chart, 3 placeholder sections. Ready for Railway deployment.
 
 ## Next Action
-Gemini: Pick up Task 3 (parseSheet module). Pull latest main before starting.
+Human/Claude: Deploy to Railway (Task 8). Follow steps in docs/superpowers/plans/2026-05-22-goodearth-kpi-dashboard.md — Task 8 requires Railway account setup and manual steps in the Railway dashboard.
 
 ## Open Questions / Blockers
-None.
+None — all code complete. Task 8 requires Railway account and manual deploy steps.
 
 ## Agent Roles
 | Agent | Role |
@@ -25,3 +25,8 @@ None.
 - Codex: review only, never commit
 - Claude: update AGENTS.md only, never commit code
 - Commit messages describe the work (e.g. "add /api/data endpoint"), not the agent
+
+## Phase 2 Notes (for future reference)
+- Add PostgreSQL snapshot storage (monthly)
+- Add project CRUD (add/edit/archive projects without code changes)
+- Connect remaining Google Sheets for External Projects, Initiators, Sales & Marketing
