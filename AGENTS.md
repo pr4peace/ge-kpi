@@ -1,16 +1,22 @@
 # GoodEarth KPI — Agent Coordination
 
 ## Current Phase
-Phase 1 — Build and deploy the live financial dashboard.
+Phase 1 — COMPLETE. Planning Phase 2 when ready.
+
+## Live URL
+https://hopeful-nature-production-cd29.up.railway.app
 
 ## Last Action
-Gemini (2026-05-22): Phase 1 frontend complete. Tasks 1–7 done. All 18 tests passing. Dashboard verified locally — 4 project cards live, financial tables, Chart.js bar chart, 3 placeholder sections. Ready for Railway deployment.
+Claude (2026-05-22): Phase 1 fully deployed. All 8 tasks complete. Dashboard live at Railway URL above — verified 4 project cards (Motif, Octave, Ochre, Cadence), live financial data from Google Sheets, Chart.js chart, 3 placeholder sections.
 
 ## Next Action
-Human/Claude: Deploy to Railway (Task 8). Follow steps in docs/superpowers/plans/2026-05-22-goodearth-kpi-dashboard.md — Task 8 requires Railway account setup and manual steps in the Railway dashboard.
+Claude/Prashanth: Kick off Phase 2 planning when ready.
+- Add PostgreSQL snapshot storage (monthly KPI snapshots → trend charts)
+- Add project CRUD (add/edit/archive projects without code changes)
+- Connect Google Sheets for External Projects, Initiators, Sales & Marketing
 
 ## Open Questions / Blockers
-None — all code complete. Task 8 requires Railway account and manual deploy steps.
+None. Phase 1 shipped.
 
 ## Agent Roles
 | Agent | Role |
