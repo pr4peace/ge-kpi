@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GoodEarth KPI Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #faf8f3;
+      color: #3a3028;
+      font-family: -apple-system, 'Segoe UI', sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    /* Header */
+    .site-header {
+      background: #fff;
+      border-bottom: 1px solid #e8dcc8;
+      padding: 20px 40px;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+    }
+    .site-header h1 {
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: 22px;
+      font-weight: normal;
+      color: #8b6914;
+      letter-spacing: 0.5px;
+    }
+    .site-header .updated {
+      font-size: 12px;
+      color: #b8a888;
+    }
+
+    /* Main layout */
+    main { max-width: 1100px; margin: 0 auto; padding: 40px 40px 80px; }
+
+    /* Section */
+    .section { margin-bottom: 56px; }
+    .section-title {
+      font-family: Georgia, serif;
+      font-size: 18px;
+      font-weight: normal;
+      color: #8b6914;
+      border-bottom: 1px solid #e8dcc8;
+      padding-bottom: 10px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-title .badge {
+      font-size: 10px;
+      font-family: sans-serif;
+      background: #8b6914;
+      color: #fff;
+      padding: 2px 8px;
+      border-radius: 10px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .section-title .badge.soon {
+      background: #d4c4a0;
+      color: #8b6914;
+    }
+
+    /* Project cards grid */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .project-card {
+      background: #fff;
+      border: 1px solid #e8dcc8;
+      border-radius: 6px;
+      padding: 18px 20px;
+    }
+    .project-card .project-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: #3a3028;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .rag-dot {
+      width: 9px; height: 9px;
+      border-radius: 50%;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+    .rag-dot.green  { background: #5a9a5a; }
+    .rag-dot.amber  { background: #d48a20; }
+    .rag-dot.red    { background: #c0392b; }
+    .rag-dot.grey   { background: #ccc; }
+    .project-card .stat-label { font-size: 11px; color: #b8a888; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 10px; }
+    .project-card .stat-value { font-size: 20px; font-weight: 600; color: #3a3028; }
+    .project-card .stat-sub   { font-size: 12px; color: #b8a888; }
+
+    /* Progress bar */
+    .progress-wrap { margin: 20px 0 8px; }
+    .progress-label { display: flex; justify-content: space-between; font-size: 12px; color: #8b6914; margin-bottom: 4px; }
+    .progress-bar { height: 6px; background: #f0e8d8; border-radius: 3px; }
+    .progress-bar-fill { height: 100%; border-radius: 3px; background: #8b6914; transition: width 0.5s ease; }
+
+    /* Detail table */
+    .detail-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 16px; }
+    .detail-table th { text-align: left; font-weight: 600; color: #8b6914; padding: 6px 10px; border-bottom: 1px solid #e8dcc8; font-size: 11px; text-transform: uppercase; letter-spacing: 0.4px; }
+    .detail-table td { padding: 8px 10px; border-bottom: 1px solid #f5f0e8; }
+    .detail-table tr:last-child td { border-bottom: none; }
+    .positive { color: #5a9a5a; }
+    .negative { color: #c0392b; }
+
+    /* Chart container */
+    .chart-wrap { background: #fff; border: 1px solid #e8dcc8; border-radius: 6px; padding: 24px; margin-top: 24px; }
+    .chart-title { font-size: 13px; color: #8b6914; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 16px; }
+
+    /* Placeholder (greyed-out sections) */
+    .placeholder-card {
+      background: #f5f2eb;
+      border: 1px dashed #d4c4a0;
+      border-radius: 6px;
+      padding: 32px;
+      text-align: center;
+      color: #c4b48a;
+    }
+    .placeholder-card p { font-size: 14px; margin-top: 6px; }
+
+    /* Loading state */
+    .loading { text-align: center; padding: 40px; color: #b8a888; font-size: 14px; }
+    .error-msg { background: #fdf0f0; border: 1px solid #f0c8c8; border-radius: 6px; padding: 16px; color: #c0392b; font-size: 14px; }
+  </style>
+</head>
+<body>
+
+<header class="site-header">
+  <h1>GoodEarth &mdash; KPI Dashboard</h1>
+  <span class="updated" id="last-updated">Loading&hellip;</span>
+</header>
+
+<main>
+  <!-- Internal Projects (live) -->
+  <section class="section" id="section-internal">
+    <h2 class="section-title">
+      Internal Projects
+      <span class="badge" id="internal-badge">Live</span>
+    </h2>
+    <div id="internal-content">
+      <div class="loading">Fetching data&hellip;</div>
+    </div>
+  </section>
+
+  <!-- External Projects (placeholder) -->
+  <section class="section">
+    <h2 class="section-title">
+      External Projects
+      <span class="badge soon">Coming Soon</span>
+    </h2>
+    <div class="placeholder-card">
+      <strong>Restoration &amp; Client Interiors</strong>
+      <p>Connect your external project data to see KPIs here.</p>
+    </div>
+  </section>
+
+  <!-- Initiators (placeholder) -->
+  <section class="section">
+    <h2 class="section-title">
+      Initiators
+      <span class="badge soon">Coming Soon</span>
+    </h2>
+    <div class="placeholder-card">
+      <strong>Interiors &middot; Home Automation &middot; Furniture</strong>
+      <p>Connect your initiator venture data to see KPIs here.</p>
+    </div>
+  </section>
+
+  <!-- Sales & Marketing (placeholder) -->
+  <section class="section">
+    <h2 class="section-title">
+      Sales &amp; Marketing
+      <span class="badge soon">Coming Soon</span>
+    </h2>
+    <div class="placeholder-card">
+      <strong>Pipeline &middot; Campaigns &middot; Push &amp; Pull</strong>
+      <p>Connect your sales and marketing data to see KPIs here.</p>
+    </div>
+  </section>
+</main>
+
+<script>
+  // Live data rendering added in Task 6
+</script>
+
+</body>
+</html>
