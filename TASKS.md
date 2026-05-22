@@ -9,4 +9,4 @@
 - [x] Task 5: Frontend shell (warm cream style, layout, header)
 - [x] Task 6: Internal Projects live section (cards + Chart.js)
 - [x] Task 7: Final polish + agent handoff update
-- [ ] Task 8: Deploy to Railway
+- [x] Task 8: Deploy to Railway
