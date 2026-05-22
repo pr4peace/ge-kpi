@@ -302,7 +302,7 @@ function renderInternalProjects(projects, container) {
   // ── 2. Project health cards ────────────────────────────────────
   html.push(`<div class="cards-grid">`);
   projects.forEach((p, i) => {
-    const { totalSpent, totalBudget, totalSavings, utilPct } = calcs[i];
+    const { totalSpent, totalBalance, totalBudget, totalSavings, utilPct } = calcs[i];
     const b    = p.financial.building || {};
     const infra = p.financial.infra   || {};
     const bSave  = b.impactCr    || 0;
