@@ -11,8 +11,16 @@ const COL_IMPACT_SFT   = 8;
 const COL_IMPACT_CR    = 9;
 
 function parseFinancialSheet(rows) {
-  // rows is a 2D array from the Sheets API (first row is header, skip it)
-  rows = rows.slice(1);
+  // Skip leading header/metadata rows — find the first row with a numeric Sl no
+  const dataStart = rows.findIndex(r => r[COL_SL_NO] && !isNaN(Number(r[COL_SL_NO])));
+  rows = dataStart >= 0 ? rows.slice(dataStart) : [];
+
+  // Pad short rows so column accesses never return undefined
+  rows = rows.map(r => {
+    const padded = r.slice();
+    while (padded.length <= COL_IMPACT_CR) padded.push('');
+    return padded;
+  });
 
   const projects = [];
   let currentProject = null;
@@ -76,24 +84,5 @@ function deriveStatus(financial) {
   return 'red';
 }
 
-// Handles quoted fields with commas inside
-function parseCsvLine(line) {
-  const result = [];
-  let current = '';
-  let inQuotes = false;
-  for (let i = 0; i < line.length; i++) {
-    const ch = line[i];
-    if (ch === '"') {
-      inQuotes = !inQuotes;
-    } else if (ch === ',' && !inQuotes) {
-      result.push(current);
-      current = '';
-    } else {
-      current += ch;
-    }
-  }
-  result.push(current);
-  return result.map(f => f.replace(/\r$/, ''));
-}
 
 module.exports = { parseFinancialSheet };
