@@ -72,4 +72,36 @@ describe('parseSheet', () => {
   test('returns null for salesMarketing', () => {
     expect(result.salesMarketing).toBeNull();
   });
+
+  test('handles \\r\\n line endings without corrupting numbers', () => {
+    const crlfCsv = SAMPLE_CSV.replace(/\n/g, '\r\n');
+    const r = parseSheet(crlfCsv);
+    expect(r.internalProjects[0].financial.building.spent).toBe(39.77);
+  });
+
+  test('deriveStatus returns amber when projected is within 5% over budget', () => {
+    // budget 2000, projected 2080 = 4% over → amber
+    const csvWithAmber = `Sl no,Projects,Area,Items,Spent (Rs in Crs),Balance (Rs in Crs),Budget Per sft,Projected Pr sft,Impact Per sft,Impact (Rupees in Crs)
+1,TestAmber,,Cost,,,,,,
+,,,a. Building,10,5,2000,2080,80,0.5`;
+    const r = parseSheet(csvWithAmber);
+    expect(r.internalProjects[0].status).toBe('amber');
+  });
+
+  test('deriveStatus returns red when projected is more than 5% over budget', () => {
+    // budget 2000, projected 2200 = 10% over → red
+    const csvWithRed = `Sl no,Projects,Area,Items,Spent (Rs in Crs),Balance (Rs in Crs),Budget Per sft,Projected Pr sft,Impact Per sft,Impact (Rupees in Crs)
+1,TestRed,,Cost,,,,,,
+,,,a. Building,10,5,2000,2200,200,1`;
+    const r = parseSheet(csvWithRed);
+    expect(r.internalProjects[0].status).toBe('red');
+  });
+
+  test('deriveStatus returns grey when building data is missing', () => {
+    const csvNoBuilding = `Sl no,Projects,Area,Items,Spent (Rs in Crs),Balance (Rs in Crs),Budget Per sft,Projected Pr sft,Impact Per sft,Impact (Rupees in Crs)
+1,TestGrey,,Cost,,,,,,
+,,,b. Infra,5,2,1000,1000,0,0`;
+    const r = parseSheet(csvNoBuilding);
+    expect(r.internalProjects[0].status).toBe('grey');
+  });
 });

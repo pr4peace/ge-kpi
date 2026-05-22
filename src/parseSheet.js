@@ -1,5 +1,15 @@
 'use strict';
 
+const COL_SL_NO        = 0;
+const COL_PROJECT      = 1;
+const COL_ITEMS        = 3;
+const COL_SPENT        = 4;
+const COL_BALANCE      = 5;
+const COL_BUDGET_SFT   = 6;
+const COL_PROJECTED_SFT = 7;
+const COL_IMPACT_SFT   = 8;
+const COL_IMPACT_CR    = 9;
+
 function parseSheet(csvString) {
   const lines = csvString.split('\n').map(line => line.trim()).filter(Boolean);
   // skip header row
@@ -9,9 +19,9 @@ function parseSheet(csvString) {
   let currentProject = null;
 
   for (const row of rows) {
-    const slNo = row[0].trim();
-    const projectName = row[1].trim();
-    const items = row[3].trim();
+    const slNo = row[COL_SL_NO].trim();
+    const projectName = row[COL_PROJECT].trim();
+    const items = row[COL_ITEMS].trim();
 
     if (slNo && !isNaN(Number(slNo)) && projectName) {
       currentProject = { name: projectName, financial: {} };
@@ -47,15 +57,17 @@ function parseSheet(csvString) {
 
 function extractFinancials(row) {
   return {
-    spent:           parseFloat(row[4]) || 0,
-    balance:         parseFloat(row[5]) || 0,
-    budgetPerSft:    parseFloat(row[6]) || 0,
-    projectedPerSft: parseFloat(row[7]) || 0,
-    impactPerSft:    parseFloat(row[8]) || 0,
-    impactCr:        parseFloat(row[9]) || 0,
+    spent:           parseFloat(row[COL_SPENT])        || 0,
+    balance:         parseFloat(row[COL_BALANCE])      || 0,
+    budgetPerSft:    parseFloat(row[COL_BUDGET_SFT])   || 0,
+    projectedPerSft: parseFloat(row[COL_PROJECTED_SFT]) || 0,
+    impactPerSft:    parseFloat(row[COL_IMPACT_SFT])   || 0,
+    impactCr:        parseFloat(row[COL_IMPACT_CR])    || 0,
   };
 }
 
+// Status is derived from building cost only — infra is not considered for overall project RAG.
+// Amber threshold = 5% over budget (business rule): 0 < diff/budget <= 0.05 → amber, > 0.05 → red.
 function deriveStatus(financial) {
   const b = financial.building;
   if (!b) return 'grey';
@@ -82,7 +94,7 @@ function parseCsvLine(line) {
     }
   }
   result.push(current);
-  return result;
+  return result.map(f => f.replace(/\r$/, ''));
 }
 
 module.exports = { parseSheet };
