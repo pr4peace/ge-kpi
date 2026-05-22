@@ -10,10 +10,9 @@ const COL_PROJECTED_SFT = 7;
 const COL_IMPACT_SFT   = 8;
 const COL_IMPACT_CR    = 9;
 
-function parseSheet(csvString) {
-  const lines = csvString.split('\n').map(line => line.trim()).filter(Boolean);
-  // skip header row
-  const rows = lines.slice(1).map(line => parseCsvLine(line));
+function parseFinancialSheet(rows) {
+  // rows is a 2D array from the Sheets API (first row is header, skip it)
+  rows = rows.slice(1);
 
   const projects = [];
   let currentProject = null;
@@ -97,4 +96,4 @@ function parseCsvLine(line) {
   return result.map(f => f.replace(/\r$/, ''));
 }
 
-module.exports = { parseSheet };
+module.exports = { parseFinancialSheet };
