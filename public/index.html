@@ -13,9 +13,6 @@
     .site-header { background: #fff; border-bottom: 1px solid #e8dcc8; padding: 16px 40px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
     .site-header h1 { font-family: Georgia, serif; font-size: 20px; font-weight: normal; color: #8b6914; letter-spacing: 0.5px; white-space: nowrap; }
     .updated { font-size: 12px; color: #b8a888; }
-    .role-select { appearance: none; background: #faf8f3; border: 1px solid #e8dcc8; border-radius: 4px; padding: 5px 28px 5px 10px; font-size: 12px; color: #8b6914; cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238b6914'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; }
-    .role-select:focus { outline: none; border-color: #8b6914; }
-    .role-label { font-size: 11px; color: #b8a888; text-transform: uppercase; letter-spacing: 0.5px; }
 
     main { max-width: 1140px; margin: 0 auto; padding: 40px 40px 80px; }
     .section { margin-bottom: 56px; }
@@ -193,6 +190,16 @@
     .health-metric-val { font-size:14px; font-weight:700; color:#3a3028; }
     .health-metric-label { font-size:9px; color:#b8a888; text-transform:uppercase; letter-spacing:.4px; }
 
+    /* Project hero card */
+    .proj-hero-card { background:#fff; border:1px solid #e8dcc8; border-radius:8px; padding:20px 24px; margin-bottom:12px; }
+    .proj-hero-top { display:flex; align-items:center; gap:14px; margin-bottom:16px; }
+    .proj-hero-nums { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+    .proj-hero-num { text-align:center; }
+    .phn-val { font-size:22px; font-weight:700; color:#3a3028; line-height:1.1; }
+    .phn-label { font-size:10px; color:#b8a888; text-transform:uppercase; letter-spacing:.3px; margin-top:2px; }
+    .proj-hero-arrow { font-size:18px; color:#d4c4a0; font-weight:300; }
+    .proj-hero-divider { width:1px; height:36px; background:#e8dcc8; margin:0 4px; }
+
     /* Budget overview bars */
     .budget-overview-grid { display:grid; grid-template-columns:1fr auto; gap:20px; align-items:start; }
     .budget-bars-col { display:flex; flex-direction:column; gap:10px; }
@@ -265,15 +272,6 @@
 <header class="site-header">
   <h1>GoodEarth &mdash; KPI Dashboard</h1>
   <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
-    <div style="display:flex;align-items:center;gap:6px">
-      <span class="role-label">View as</span>
-      <select class="role-select" id="role-select">
-        <option value="md">Managing Director</option>
-        <option value="mgmt" selected>Management</option>
-        <option value="gm">General Manager</option>
-        <option value="pm">Project Manager</option>
-      </select>
-    </div>
     <a href="https://docs.google.com/spreadsheets/d/1Ce_Ah9M3VoS34SDnzk00si1jlwsDPuVpUscHoKC4HIw" target="_blank" rel="noopener" style="font-size:12px;color:#8b6914;text-decoration:none;border:1px solid #e8dcc8;border-radius:4px;padding:4px 10px;background:#fff;">↗ Source Sheet</a>
     <span class="updated" id="last-updated">Loading&hellip;</span>
   </div>
@@ -323,17 +321,6 @@
 'use strict';
 
 // ── Role system ───────────────────────────────────────────────────────────────
-const ROLE_LEVEL = { md: 1, mgmt: 2, gm: 3, pm: 4 };
-function applyRole(role) {
-  localStorage.setItem('kpi-role', role);
-  const level = ROLE_LEVEL[role] || 2;
-  document.querySelectorAll('[data-min-role]').forEach(el => {
-    el.style.display = level >= (ROLE_LEVEL[el.dataset.minRole] || 1) ? '' : 'none';
-  });
-  const sel = document.getElementById('role-select');
-  if (sel && sel.value !== role) sel.value = role;
-}
-document.getElementById('role-select').addEventListener('change', e => applyRole(e.target.value));
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const fmt  = n => typeof n === 'number' ? n.toFixed(2) : String(n);
@@ -527,22 +514,19 @@ function renderCompliance() {
   const container = document.getElementById('compliance-content');
   if (!container) return;
   const rows = COMPLIANCE_ITEMS.map(r => {
-    if (r.group) return `<tr class="compliance-group-header"><td colspan="6">${r.group}</td></tr>`;
+    if (r.group) return `<tr class="compliance-group-header"><td colspan="4">${r.group}</td></tr>`;
     const ragClass = r.status === 'placeholder' ? 'placeholder' : r.status;
-    const ragText  = r.status === 'placeholder' ? 'Placeholder' : r.status.charAt(0).toUpperCase()+r.status.slice(1);
+    const scope = r.project && r.project !== 'All' ? ` <span style="color:#b8a888;font-weight:400">(${r.project})</span>` : '';
     return `<tr>
-      <td>${r.item}</td>
-      <td>${r.project}</td>
-      <td>${r.freq}</td>
-      <td>${r.due}</td>
-      <td><div class="rag-label"><span class="rag ${ragClass}"></span>${ragText}</div></td>
-      <td style="color:#b8a888;font-size:11px">${r.notes || 'Update in KPI sheet'}</td>
+      <td>${r.item}${scope}</td>
+      <td style="color:#b8a888">${r.freq}</td>
+      <td style="color:#b8a888">${r.due}</td>
+      <td><div class="rag-label"><span class="rag ${ragClass}"></span></div></td>
     </tr>`;
   }).join('');
   container.innerHTML = `
-    <p style="font-size:12px;color:#b8a888;margin-bottom:16px">Statutory and tax compliance tracker. Finance/Admin updates the KPI sheet fortnightly — statuses reflect live here.</p>
     <table class="compliance-table">
-      <thead><tr><th>Item</th><th>Project</th><th>Frequency</th><th>Due Date</th><th>Status</th><th>Notes</th></tr></thead>
+      <thead><tr><th>Item</th><th>Frequency</th><th>Due Date</th><th>Status</th></tr></thead>
       <tbody>${rows}</tbody>
     </table>`;
 }
@@ -617,12 +601,15 @@ function renderInternalProjects(projects, scheduleData, materials, container) {
   };
 
   const html = [];
-  const tabs = ['Portfolio', ...projects.map(p => p.name), 'Saarang'];
-  
+
   html.push(`<div class="tab-nav">`);
-  tabs.forEach((name, i) => {
-    html.push(`<button class="tab-btn ${i === 0 ? 'active' : ''}" data-tab="${name.toLowerCase().replace(/\s+/g, '-')}">${name}</button>`);
+  html.push(`<button class="tab-btn active" data-tab="portfolio">Portfolio</button>`);
+  projects.forEach((p, i) => {
+    const h = getHealth(p, i);
+    const dot = `<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${h.composite==='green'?'#5a9a5a':h.composite==='amber'?'#d48a20':'#c0392b'};margin-right:5px;vertical-align:middle"></span>`;
+    html.push(`<button class="tab-btn" data-tab="${p.name.toLowerCase().replace(/\s+/g,'-')}">${dot}${p.name}</button>`);
   });
+  html.push(`<button class="tab-btn" data-tab="saarang"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#d4c4a0;margin-right:5px;vertical-align:middle"></span>Saarang</button>`);
   html.push(`</div>`);
 
   // 1. Portfolio Tab
@@ -636,9 +623,16 @@ function renderInternalProjects(projects, scheduleData, materials, container) {
   html.push(ic('Current Projection', `₹${fmt(portCurrent)} Cr`, 'across all projects'));
   html.push(ic('Spent to Date', `₹${fmt(portSpent)} Cr`, `${Math.round((portSpent/portCurrent)*100)}% of projection`));
   html.push(ic('Still to Spend', `₹${fmt(portCurrent - portSpent)} Cr`, 'uncommitted balance'));
-  html.push(ic('On Track', `${underBudget} / ${projects.length}`, 'projects under budget', underBudget === projects.length ? 'green' : 'amber'));
+  html.push(ic('On Track', `${underBudget} / 5`, 'projects under budget (Saarang TBD)', underBudget === projects.length ? 'green' : 'amber'));
   if (ochre) html.push(ic('Ochre Progress', `${Math.round(ochre.townhouses.summary.avgCompletion * 100)}%`, `${ochre.townhouses.summary.totalPlots} units · avg construction`));
   html.push(ic('Portfolio Impact', `${fmtC(portSavings)} Cr`, portSavings <= 0 ? 'vs sanctioned · saving' : 'vs sanctioned · overrun', portSavings <= 0 ? 'green' : 'negative'));
+  html.push(ic('Avg Utilization', `${Math.round((portSpent/portCurrent)*100)}%`, 'spent vs current projection'));
+  const savingsPct = portBudget ? Math.abs(Math.round((portSavings/portBudget)*100)) : 0;
+  html.push(ic('Savings Rate', `${savingsPct}%`, portSavings <= 0 ? 'of sanctioned saved' : 'of sanctioned over', portSavings <= 0 ? 'green' : 'negative'));
+  if (ochre) {
+    const unitsDone = ochre.townhouses.plots.filter(pl => pl.overallPct >= 1).length;
+    html.push(ic('Units Complete', `${unitsDone} / ${ochre.townhouses.summary.totalPlots}`, 'Ochre townhouses at 100%', unitsDone > 0 ? 'green' : ''));
+  }
   html.push(`</div></div></details>`);
 
   const ochreAvg = ochre ? `${Math.round(ochre.townhouses.summary.avgCompletion * 100)}% avg construction` : '';
@@ -734,36 +728,51 @@ function renderInternalProjects(projects, scheduleData, materials, container) {
       phaseMiniStrip = `<div style="margin-top:10px"><div class="phase-mini">${segs}</div><div class="phase-mini-labels"><span>Found</span><span>GF</span><span>FF</span><span>SF</span><span>Finish</span></div></div>`;
     }
 
+    const impactCr = totalSavings;
+    const impactColor = impactCr <= 0 ? '#5a9a5a' : '#c0392b';
+    const impactStr = impactCr <= 0 ? `−₹${Math.abs(impactCr).toFixed(2)} Cr saved` : `+₹${impactCr.toFixed(2)} Cr over`;
     html.push(`
-      <div class="health-card" style="margin-bottom:16px; width:100%; max-width:none;">
-        <div class="health-card-top">
-          <div class="health-badge ${health.composite}" title="${health.breakdown}"></div>
-          <div>
-            <div class="health-card-name">${p.name}</div>
-            <div class="health-card-client">Client TBD</div>
+      <div class="proj-hero-card">
+        <div class="proj-hero-top">
+          <div class="health-badge ${health.composite}" title="${health.breakdown}" style="width:36px;height:36px;flex-shrink:0"></div>
+          <div style="flex:1">
+            <div style="font-size:18px;font-weight:700;color:#3a3028">${p.name}</div>
+            <div style="font-size:11px;color:#b8a888">Client TBD</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:13px;font-weight:700;color:${impactColor}">${impactStr}</div>
+            <div style="font-size:10px;color:#b8a888">vs sanctioned</div>
           </div>
         </div>
-        <div class="health-metrics" style="grid-template-columns: repeat(3, 1fr);">
-          <div class="health-metric"><div class="health-metric-val">₹${fmt(originalBudget)}</div><div class="health-metric-label">Sanctioned</div></div>
-          <div class="health-metric"><div class="health-metric-val">₹${fmt(totalSpent)}</div><div class="health-metric-label">Spent</div></div>
-          <div class="health-metric"><div class="health-metric-val">₹${fmt(totalBalance)}</div><div class="health-metric-label">To Spend</div></div>
+        <div class="proj-hero-nums">
+          <div class="proj-hero-num">
+            <div class="phn-val">₹${fmt(originalBudget)} Cr</div>
+            <div class="phn-label">Sanctioned</div>
+          </div>
+          <div class="proj-hero-arrow">→</div>
+          <div class="proj-hero-num">
+            <div class="phn-val">₹${fmt(totalBudget)} Cr</div>
+            <div class="phn-label">Projection</div>
+          </div>
+          <div class="proj-hero-divider"></div>
+          <div class="proj-hero-num">
+            <div class="phn-val">₹${fmt(totalSpent)} Cr</div>
+            <div class="phn-label">Spent · ${utilPct}%</div>
+          </div>
+          <div class="proj-hero-num">
+            <div class="phn-val">₹${fmt(totalBalance)} Cr</div>
+            <div class="phn-label">To Spend</div>
+          </div>
         </div>
+        <div class="util-bar" style="margin-top:10px"><div class="util-fill${utilPct >= 95 ? ' near-full' : ''}" style="width:${utilPct}%"></div></div>
         ${phaseMiniStrip}
       </div>`);
 
     html.push(`
       <details class="data-section">
-        <summary>Financial Breakdown</summary>
+        <summary>Cost per sft</summary>
         <div class="data-section-body">
-          <div class="budget-triple">
-            <div class="budget-cell" style="background:#f5f2eb"><div class="bc-label">Sanctioned</div><div class="bc-val">₹${fmt(originalBudget)}</div><div class="bc-sub">Cr</div></div>
-            <div class="budget-cell" style="background:#e8f0e8"><div class="bc-label">Spent</div><div class="bc-val">₹${fmt(totalSpent)}</div><div class="bc-sub">Cr</div></div>
-            <div class="budget-cell" style="background:#fdf6e8"><div class="bc-label">To Spend</div><div class="bc-val">₹${fmt(totalBalance)}</div><div class="bc-sub">Cr</div></div>
-          </div>
-          <div class="util-bar"><div class="util-fill${utilPct >= 95 ? ' near-full' : ''}" style="width:${utilPct}%"></div></div>
-          <div style="font-size:11px;color:#b8a888;margin-bottom:12px">${utilPct}% of current projection utilized</div>
-          <div class="impact-row"><span>Impact vs Sanctioned</span><span class="${totalSavings <= 0 ? 'positive' : 'negative'}" style="font-weight:700">${fmtC(totalSavings)} Cr</span></div>
-          <table class="variance-table" style="margin-top:16px">
+          <table class="variance-table">
             <thead><tr><th>Category</th><th>Budget/sft</th><th>Proj/sft</th><th>Var</th></tr></thead>
             <tbody>
               ${['building', 'infra'].map(key => {
@@ -901,7 +910,6 @@ function renderInternalProjects(projects, scheduleData, materials, container) {
 
 
   initTabs(container);
-  applyRole(localStorage.getItem('kpi-role') || 'mgmt');
 }
 
 loadDashboard();
