@@ -24,14 +24,14 @@
     .badge.soon { background: #d4c4a0; color: #8b6914; }
 
     /* Insight strip */
-    .insights-strip { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; margin-bottom: 20px; }
-    .insight-card { background: #fff; border: 1px solid #e8dcc8; border-radius: 6px; padding: 14px 18px; }
-    .ins-label { font-size: 10px; color: #b8a888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
-    .ins-value { font-size: 22px; font-weight: 700; color: #3a3028; line-height: 1.2; }
+    .insights-strip { display: grid; grid-template-columns: repeat(auto-fill, minmax(148px, 1fr)); gap: 10px; margin-bottom: 20px; align-items: stretch; }
+    .insight-card { background: #fff; border: 1px solid #e8dcc8; border-radius: 6px; padding: 12px 14px; display: flex; flex-direction: column; }
+    .ins-label { font-size: 9px; color: #b8a888; text-transform: uppercase; letter-spacing: 0.4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 6px; }
+    .ins-value { font-size: 20px; font-weight: 700; color: #3a3028; line-height: 1.15; flex: 1; display: flex; align-items: flex-end; padding-bottom: 4px; }
     .ins-value.green { color: #5a9a5a; }
     .ins-value.amber { color: #d48a20; }
     .ins-value.negative { color: #c0392b; }
-    .ins-sub { font-size: 11px; color: #b8a888; margin-top: 2px; }
+    .ins-sub { font-size: 10px; color: #b8a888; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
     /* Portfolio overview */
     .portfolio-overview { display: grid; grid-template-columns: 200px 1fr; gap: 16px; margin-bottom: 24px; }
@@ -244,8 +244,10 @@
     .sub-section { border:1px solid #e8dcc8; border-radius:6px; margin-bottom:12px; background:#fff; overflow:hidden; }
     .sub-section > summary { padding:10px 14px; cursor:pointer; font-size:12px; font-weight:600; color:#8b6914; list-style:none; display:flex; align-items:center; justify-content:space-between; user-select:none; }
     .sub-section > summary::-webkit-details-marker { display:none; }
-    .sub-section > summary::after { content:'▾'; font-size:10px; color:#b8a888; transition:transform .15s; }
+    .sub-section > summary::after { content:'▾'; font-size:10px; color:#b8a888; }
     .sub-section:not([open]) > summary::after { content:'▸'; }
+    .sub-summary-peek { font-size:11px; font-weight:400; color:#b8a888; margin-left:auto; margin-right:10px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:55%; }
+    details.sub-section[open] .sub-summary-peek { display:none; }
   </style>
 </head>
 <body>
@@ -610,7 +612,9 @@ function renderInternalProjects(projects, scheduleData, materials, container) {
   // 1. Portfolio Tab
   html.push(`<div class="tab-pane active" id="tab-portfolio">`);
 
-  html.push(`<details class="sub-section" open><summary>Portfolio Summary</summary>`);
+  const impactLabel = portSavings <= 0 ? `<span style="color:#5a9a5a;font-weight:700">${fmtC(portSavings)} Cr saved</span>` : `<span style="color:#c0392b;font-weight:700">${fmtC(portSavings)} Cr overrun</span>`;
+  html.push(`<details class="sub-section" open>
+    <summary><span>Portfolio Summary</span><span class="sub-summary-peek">₹${fmt(portBudget)} Cr sanctioned &nbsp;·&nbsp; ${underBudget}/${projects.length} on track &nbsp;·&nbsp; ${impactLabel}</span></summary>`);
   html.push(`<div style="padding:8px 14px 14px"><div class="insights-strip" style="margin-bottom:0">`);
   html.push(ic('Sanctioned Budget', `₹${fmt(portBudget)} Cr`, 'original approved total'));
   html.push(ic('Current Projection', `₹${fmt(portCurrent)} Cr`, 'across all projects'));
@@ -621,7 +625,9 @@ function renderInternalProjects(projects, scheduleData, materials, container) {
   html.push(ic('Portfolio Impact', `${fmtC(portSavings)} Cr`, portSavings <= 0 ? 'vs sanctioned · saving' : 'vs sanctioned · overrun', portSavings <= 0 ? 'green' : 'negative'));
   html.push(`</div></div></details>`);
 
-  html.push(`<details class="sub-section" open><summary>Budget Charts</summary>`);
+  const ochreAvg = ochre ? `${Math.round(ochre.townhouses.summary.avgCompletion * 100)}% avg construction` : '';
+  html.push(`<details class="sub-section" open>
+    <summary><span>Budget Charts</span><span class="sub-summary-peek">Savings vs sanctioned &nbsp;·&nbsp; Budget split by project${ochreAvg ? ' &nbsp;·&nbsp; Ochre ' + ochreAvg : ''}</span></summary>`);
   html.push(`<div style="padding:8px 14px 14px"><div class="charts-row">
     <div class="chart-wrap" style="margin-bottom:0">
       <div class="chart-title">Savings / Overrun vs Sanctioned Budget (₹ Cr)</div>
@@ -633,11 +639,19 @@ function renderInternalProjects(projects, scheduleData, materials, container) {
     </div>
   </div></div></details>`);
 
-  html.push(`<details class="sub-section" open><summary>Project Health</summary>`);
+  const healthDots = projects.map((p, i) => {
+    const h = getHealth(p, i);
+    return `<span class="rag ${h.composite}" title="${p.name}: ${h.breakdown}"></span>`;
+  }).join(' ');
+  html.push(`<details class="sub-section" open>
+    <summary><span>Project Health</span><span class="sub-summary-peek">${healthDots} &nbsp; ${underBudget}/${projects.length} on track</span></summary>`);
   html.push(`<div style="padding:8px 14px 14px"><div class="health-cards-grid" style="margin-top:0">`);
   projects.forEach((p, i) => {
     const health = getHealth(p, i);
     const { originalBudget, totalSpent } = calcs[i];
+    const constVal = health.cPct > 0 ? `${health.cPct.toFixed(0)}%` : '—';
+    const constLabel = health.cPct > 0 ? 'Const %' : 'Const %';
+    const constTitle = health.cPct > 0 ? '' : 'title="No schedule data yet"';
     html.push(`
       <div class="health-card">
         <div class="health-card-top">
@@ -650,7 +664,7 @@ function renderInternalProjects(projects, scheduleData, materials, container) {
         <div class="health-metrics">
           <div class="health-metric"><div class="health-metric-val">₹${fmt(originalBudget)}</div><div class="health-metric-label">Sanctioned</div></div>
           <div class="health-metric"><div class="health-metric-val">₹${fmt(totalSpent)}</div><div class="health-metric-label">Spent</div></div>
-          <div class="health-metric"><div class="health-metric-val">${health.cPct > 0 ? health.cPct.toFixed(0) + '%' : '—'}</div><div class="health-metric-label">Const %</div></div>
+          <div class="health-metric" ${constTitle} style="${health.cPct === 0 ? 'opacity:.45' : ''}"><div class="health-metric-val">${constVal}</div><div class="health-metric-label">${constLabel}</div></div>
         </div>
       </div>`);
   });

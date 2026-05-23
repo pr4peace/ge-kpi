@@ -7,6 +7,7 @@ const path    = require('path');
 const { parseFinancialSheet }                  = require('./src/parseSheet');
 const { parseTownhouses, parseInfrastructure } = require('./src/parseScheduleSheet');
 const { parseMaterialSheet }                   = require('./src/parseMaterialSheet');
+const { parseMetadataSheet }                   = require('./src/parseMetadataSheet');
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
@@ -15,6 +16,7 @@ const SHEETS_API_KEY  = process.env.SHEETS_API_KEY;
 const SPREADSHEET_ID  = process.env.SPREADSHEET_ID;
 const FINANCIAL_SHEET = process.env.FINANCIAL_SHEET_NAME || 'Project Accounts';
 const MATERIAL_SHEET  = process.env.MATERIAL_SHEET_NAME  || 'Materials';
+const METADATA_SHEET  = process.env.METADATA_SHEET_NAME  || 'Metadata';
 
 // Optional: separate spreadsheet for construction schedules
 const SCHEDULE_SPREADSHEET_ID = process.env.SCHEDULE_SPREADSHEET_ID;
@@ -57,13 +59,15 @@ app.get('/api/data', async (req, res) => {
     if (!SHEETS_API_KEY || !SPREADSHEET_ID)
       return res.status(500).json({ error: 'SHEETS_API_KEY or SPREADSHEET_ID not configured' });
 
-    const [financialRows, materialRows] = await Promise.all([
+    const [financialRows, materialRows, metadataRows] = await Promise.all([
       fetchRows(SPREADSHEET_ID, FINANCIAL_SHEET),
       fetchRows(SPREADSHEET_ID, MATERIAL_SHEET).catch(() => null),
+      fetchRows(SPREADSHEET_ID, METADATA_SHEET).catch(() => null),
     ]);
 
     const data = parseFinancialSheet(financialRows);
     data.materials = materialRows ? parseMaterialSheet(materialRows) : [];
+    data.metadata  = metadataRows ? parseMetadataSheet(metadataRows) : {};
 
     // Construction schedule — optional; only fetched if SCHEDULE_SPREADSHEET_ID is set
     if (SCHEDULE_SPREADSHEET_ID) {
