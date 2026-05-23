@@ -10,109 +10,124 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { background: #faf8f3; color: #3a3028; font-family: -apple-system, 'Segoe UI', sans-serif; font-size: 15px; line-height: 1.6; }
 
-    /* ── Header ─────────────────────────────────────────────── */
-    .site-header { background: #fff; border-bottom: 1px solid #e8dcc8; padding: 16px 40px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .site-header { background: #fff; border-bottom: 1px solid #e8dcc8; padding: 16px 40px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
     .site-header h1 { font-family: Georgia, serif; font-size: 20px; font-weight: normal; color: #8b6914; letter-spacing: 0.5px; white-space: nowrap; }
-    .site-header .updated { font-size: 12px; color: #b8a888; }
+    .updated { font-size: 12px; color: #b8a888; }
     .role-select { appearance: none; background: #faf8f3; border: 1px solid #e8dcc8; border-radius: 4px; padding: 5px 28px 5px 10px; font-size: 12px; color: #8b6914; cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238b6914'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; }
     .role-select:focus { outline: none; border-color: #8b6914; }
     .role-label { font-size: 11px; color: #b8a888; text-transform: uppercase; letter-spacing: 0.5px; }
 
-    /* ── Layout ─────────────────────────────────────────────── */
     main { max-width: 1140px; margin: 0 auto; padding: 40px 40px 80px; }
     .section { margin-bottom: 56px; }
     .section-title { font-family: Georgia, serif; font-size: 18px; font-weight: normal; color: #8b6914; border-bottom: 1px solid #e8dcc8; padding-bottom: 10px; margin-bottom: 24px; display: flex; align-items: center; gap: 10px; }
     .badge { font-size: 10px; font-family: sans-serif; background: #8b6914; color: #fff; padding: 2px 8px; border-radius: 10px; letter-spacing: 0.5px; text-transform: uppercase; }
     .badge.soon { background: #d4c4a0; color: #8b6914; }
 
-    /* ── Insight strip ───────────────────────────────────────── */
-    .insights-strip { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; margin-bottom: 20px; }
-    .insight-card { background: #fff; border: 1px solid #e8dcc8; border-radius: 6px; padding: 14px 18px; display: flex; flex-direction: column; gap: 4px; }
-    .ins-label { font-size: 11px; color: #b8a888; text-transform: uppercase; letter-spacing: 0.5px; }
-    .ins-value { font-size: 22px; font-weight: 700; color: #3a3028; }
+    /* Insight strip */
+    .insights-strip { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; margin-bottom: 20px; }
+    .insight-card { background: #fff; border: 1px solid #e8dcc8; border-radius: 6px; padding: 14px 18px; }
+    .ins-label { font-size: 10px; color: #b8a888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+    .ins-value { font-size: 22px; font-weight: 700; color: #3a3028; line-height: 1.2; }
     .ins-value.green { color: #5a9a5a; }
     .ins-value.amber { color: #d48a20; }
-    .ins-sub { font-size: 12px; color: #b8a888; }
+    .ins-sub { font-size: 11px; color: #b8a888; margin-top: 2px; }
 
-    /* ── Portfolio overview ──────────────────────────────────── */
-    .portfolio-overview { display: grid; grid-template-columns: 220px 1fr; gap: 16px; margin-bottom: 28px; }
+    /* Portfolio overview */
+    .portfolio-overview { display: grid; grid-template-columns: 200px 1fr; gap: 16px; margin-bottom: 24px; }
     @media (max-width: 700px) { .portfolio-overview { grid-template-columns: 1fr; } }
-    .donut-wrap { background: #fff; border: 1px solid #e8dcc8; border-radius: 6px; padding: 18px; display: flex; flex-direction: column; align-items: center; gap: 8px; }
-    .donut-wrap .chart-title { align-self: flex-start; }
-    .project-status-grid { background: #fff; border: 1px solid #e8dcc8; border-radius: 6px; padding: 18px 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .donut-wrap { background: #fff; border: 1px solid #e8dcc8; border-radius: 6px; padding: 16px; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+
+    .project-status-grid { background: #fff; border: 1px solid #e8dcc8; border-radius: 6px; padding: 16px 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
     .project-status-item { display: flex; align-items: flex-start; gap: 10px; }
-    .ps-info { display: flex; flex-direction: column; gap: 2px; }
+    .ps-info { flex: 1; }
     .ps-name { font-weight: 600; font-size: 14px; color: #3a3028; }
-    .ps-detail { font-size: 11px; color: #b8a888; }
-    .ps-savings { font-size: 12px; font-weight: 600; }
-    .ps-phases { display: flex; gap: 2px; margin-top: 5px; height: 4px; border-radius: 2px; overflow: hidden; width: 120px; }
+    .ps-nums { font-size: 11px; color: #b8a888; margin-top: 1px; }
+    .ps-impact { font-size: 12px; font-weight: 600; margin-top: 2px; }
+    .ps-phases { display: flex; gap: 2px; margin-top: 5px; height: 4px; width: 100%; border-radius: 2px; overflow: hidden; }
     .ps-phase-seg { flex: 1; }
 
-    /* ── RAG dot ─────────────────────────────────────────────── */
+    /* RAG */
     .rag-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; flex-shrink: 0; margin-top: 4px; }
     .rag-dot.green { background: #5a9a5a; }
     .rag-dot.amber { background: #d48a20; }
     .rag-dot.red   { background: #c0392b; }
     .rag-dot.grey  { background: #ccc; }
 
-    /* ── Project financial cards ─────────────────────────────── */
+    /* Project cards */
     .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; margin-bottom: 20px; }
     .project-card { background: #fff; border: 1px solid #e8dcc8; border-radius: 6px; padding: 18px 20px; }
-    .project-card .project-name { font-size: 15px; font-weight: 600; color: #3a3028; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+    .project-card-name { font-size: 15px; font-weight: 600; color: #3a3028; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+    .budget-triple { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; margin-bottom: 10px; }
+    .budget-cell { border-radius: 4px; padding: 8px 6px; text-align: center; }
+    .budget-cell .bc-label { font-size: 9px; text-transform: uppercase; letter-spacing: .4px; margin-bottom: 3px; white-space: nowrap; }
+    .budget-cell .bc-val { font-size: 14px; font-weight: 700; color: #3a3028; }
+    .budget-cell .bc-sub { font-size: 9px; }
+    .util-bar { height: 5px; background: #f0e8d8; border-radius: 3px; margin-bottom: 8px; }
+    .util-fill { height: 100%; border-radius: 3px; background: #8b6914; }
+    .util-fill.near-full { background: #a0522d; }
+    .impact-row { display: flex; justify-content: space-between; align-items: center; background: #f5f2eb; border-radius: 4px; padding: 6px 10px; font-size: 12px; }
     .phase-mini { display: flex; gap: 2px; margin-top: 8px; height: 5px; }
     .phase-mini-seg { flex: 1; border-radius: 2px; }
+    .phase-mini-labels { display: flex; justify-content: space-between; font-size: 8px; color: #c8b898; margin-top: 2px; }
 
-    /* ── Progress bar ────────────────────────────────────────── */
-    .progress-wrap { margin: 8px 0; }
-    .progress-label { display: flex; justify-content: space-between; font-size: 12px; color: #8b6914; margin-bottom: 4px; }
-    .progress-bar { height: 6px; background: #f0e8d8; border-radius: 3px; }
-    .progress-bar-fill { height: 100%; border-radius: 3px; background: #8b6914; }
-    .progress-bar-fill.near-full { background: #a0522d; }
-
-    /* ── Spend bars ──────────────────────────────────────────── */
-    .spend-bars { background: #fff; border: 1px solid #e8dcc8; border-radius: 6px; padding: 20px 24px; margin-bottom: 16px; }
-    .spend-bar-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
-    .spend-bar-row:last-child { margin-bottom: 0; }
-    .spend-bar-label { width: 68px; font-size: 13px; font-weight: 600; color: #3a3028; flex-shrink: 0; }
-    .spend-bar-track { flex: 1; height: 22px; background: #f0e8d8; border-radius: 4px; overflow: hidden; }
-    .spend-bar-fill { height: 100%; border-radius: 4px; background: #8b6914; }
-    .spend-bar-fill.near-full { background: #a0522d; }
-    .spend-bar-nums { font-size: 11px; color: #b8a888; white-space: nowrap; flex-shrink: 0; width: 130px; text-align: right; }
-
-    /* ── Charts ──────────────────────────────────────────────── */
-    .chart-wrap { background: #fff; border: 1px solid #e8dcc8; border-radius: 6px; padding: 24px; margin-bottom: 16px; }
-    .chart-title { font-size: 11px; color: #8b6914; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 16px; }
+    /* Chart wrappers */
+    .chart-wrap { background: #fff; border: 1px solid #e8dcc8; border-radius: 6px; padding: 22px 24px; margin-bottom: 16px; }
+    .chart-title { font-size: 10px; color: #8b6914; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 14px; font-weight: 600; }
     .charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
     @media (max-width: 700px) { .charts-row { grid-template-columns: 1fr; } }
 
-    /* ── Cost variance matrix ────────────────────────────────── */
+    /* Cost variance table */
     .variance-table { width: 100%; border-collapse: collapse; font-size: 12px; }
     .variance-table th { background: #f5f2eb; padding: 7px 10px; text-align: center; font-size: 10px; text-transform: uppercase; letter-spacing: 0.4px; color: #8b6914; font-weight: 600; white-space: nowrap; border-bottom: 1px solid #e8dcc8; }
     .variance-table th:first-child { text-align: left; }
-    .variance-table td { padding: 9px 10px; text-align: center; border-bottom: 1px solid #f5f0e8; }
-    .variance-table td:first-child { text-align: left; font-weight: 600; color: #3a3028; }
+    .variance-table td { padding: 9px 10px; text-align: center; border-bottom: 1px solid #f5f0e8; font-size: 12px; }
+    .variance-table td:first-child { text-align: left; font-weight: 600; }
     .variance-table tr:last-child td { border-bottom: none; }
-    .variance-table .section-head td { background: #faf8f3; font-size: 10px; color: #b8a888; text-transform: uppercase; letter-spacing: 0.4px; padding: 4px 10px; }
     .var-great { color: #5a9a5a; font-weight: 700; }
     .var-good  { color: #7aaa7a; font-weight: 700; }
     .var-warn  { color: #d48a20; font-weight: 700; }
     .var-bad   { color: #c0392b; font-weight: 700; }
 
-    /* ── Phase funnel ────────────────────────────────────────── */
+    /* Materials */
+    .materials-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
+    .material-project-card { background: #fff; border: 1px solid #e8dcc8; border-radius: 6px; padding: 18px 20px; }
+    .material-project-name { font-size: 13px; font-weight: 600; color: #8b6914; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.4px; }
+    .material-row { margin-bottom: 10px; }
+    .material-row:last-of-type { margin-bottom: 0; }
+    .material-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 3px; }
+    .material-name { font-size: 12px; font-weight: 600; color: #3a3028; }
+    .material-pct  { font-size: 11px; color: #b8a888; }
+    .material-bar  { height: 5px; background: #f0e8d8; border-radius: 3px; margin-bottom: 3px; }
+    .material-fill { height: 100%; border-radius: 3px; }
+    .material-detail { font-size: 10px; color: #b8a888; }
+    .material-pending-cost { font-size: 11px; font-weight: 600; color: #d48a20; }
+    .material-total { margin-top: 12px; padding-top: 10px; border-top: 1px solid #f0e8d8; display: flex; justify-content: space-between; font-size: 12px; }
+    .coming-soon-card { background: #f5f2eb; border: 1px dashed #d4c4a0; border-radius: 6px; padding: 24px 20px; text-align: center; color: #c4b48a; }
+    .coming-soon-card strong { display: block; margin-bottom: 4px; color: #b8a888; }
+
+    /* Phase funnel */
     .phase-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
     .phase-row:last-child { margin-bottom: 0; }
     .phase-label { width: 100px; font-size: 12px; color: #3a3028; flex-shrink: 0; }
-    .phase-track { flex: 1; height: 22px; background: #f0e8d8; border-radius: 3px; overflow: hidden; display: flex; position: relative; }
-    .phase-done { background: #5a9a5a; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; }
+    .phase-track { flex: 1; height: 22px; background: #f0e8d8; border-radius: 3px; overflow: hidden; display: flex; }
+    .phase-done { background: #5a9a5a; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: #fff; overflow: hidden; white-space: nowrap; }
     .phase-wip  { background: #d4a84b; height: 100%; }
     .phase-nos  { background: #e8dcc8; height: 100%; }
-    .phase-counts { font-size: 11px; color: #b8a888; white-space: nowrap; flex-shrink: 0; width: 130px; text-align: right; }
+    .phase-counts { font-size: 11px; color: #b8a888; white-space: nowrap; flex-shrink: 0; width: 140px; text-align: right; }
 
-    /* ── Construction heat map ───────────────────────────────── */
-    .heatmap-legend { display: flex; gap: 16px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
+    /* Infra */
+    .infra-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; margin-top: 4px; }
+    .infra-item { background: #f5f2eb; border-radius: 4px; padding: 8px 10px; }
+    .infra-item-name { font-size: 10px; color: #8b6914; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 5px; }
+    .infra-item-bar { height: 5px; background: #e8dcc8; border-radius: 3px; margin-bottom: 4px; }
+    .infra-item-fill { height: 100%; border-radius: 3px; }
+    .infra-item-pct { font-size: 12px; font-weight: 700; color: #3a3028; }
+
+    /* Heat map */
+    .heatmap-legend { display: flex; gap: 14px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
     .heatmap-legend-item { display: flex; align-items: center; gap: 5px; font-size: 10px; color: #8b6914; }
     .heatmap-legend-swatch { width: 14px; height: 14px; border-radius: 2px; flex-shrink: 0; }
-    .heatmap-wrap { overflow-x: auto; margin-top: 4px; }
+    .heatmap-wrap { overflow-x: auto; }
     .heatmap-table { width: 100%; border-collapse: collapse; font-size: 11px; }
     .heatmap-table th { background: #f5f2eb; padding: 7px 10px; text-align: center; font-size: 10px; text-transform: uppercase; letter-spacing: 0.4px; color: #8b6914; font-weight: 600; white-space: nowrap; border-bottom: 1px solid #e8dcc8; }
     .heatmap-table th:first-child { text-align: left; }
@@ -120,42 +135,31 @@
     .heatmap-table td:first-child { text-align: left; font-size: 11px; font-weight: 600; color: #3a3028; padding-left: 10px; white-space: nowrap; }
     .heatmap-table tr:last-child td { border-bottom: none; }
 
-    /* ── Infra progress ──────────────────────────────────────── */
-    .infra-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; margin-top: 4px; }
-    .infra-item { background: #f5f2eb; border-radius: 4px; padding: 8px 10px; }
-    .infra-item-name { font-size: 10px; color: #8b6914; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 5px; }
-    .infra-item-bar { height: 5px; background: #e8dcc8; border-radius: 3px; margin-bottom: 4px; }
-    .infra-item-fill { height: 100%; border-radius: 3px; background: #8b6914; }
-    .infra-item-pct { font-size: 12px; font-weight: 700; color: #3a3028; }
-
-    /* ── S&M placeholder cards ───────────────────────────────── */
-    .sm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px; }
-    .sm-card { background: #fff; border: 1px dashed #d4c4a0; border-radius: 6px; padding: 18px 20px; }
-    .sm-card-title { font-size: 13px; font-weight: 600; color: #8b6914; margin-bottom: 8px; }
-    .sm-card-metrics { list-style: none; }
-    .sm-card-metrics li { font-size: 11px; color: #b8a888; padding: 3px 0; border-bottom: 1px solid #f5f0e8; display: flex; align-items: center; gap: 6px; }
-    .sm-card-metrics li:last-child { border-bottom: none; }
-    .sm-card-metrics li::before { content: '—'; color: #d4c4a0; }
-
-    /* ── Detail table ────────────────────────────────────────── */
-    .detail-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 16px; }
-    .detail-table th { text-align: left; font-weight: 600; color: #8b6914; padding: 6px 10px; border-bottom: 1px solid #e8dcc8; font-size: 11px; text-transform: uppercase; letter-spacing: 0.4px; }
+    /* Detail table */
+    .detail-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 16px; }
+    .detail-table th { text-align: left; font-weight: 600; color: #8b6914; padding: 6px 10px; border-bottom: 1px solid #e8dcc8; font-size: 10px; text-transform: uppercase; letter-spacing: 0.4px; }
     .detail-table td { padding: 8px 10px; border-bottom: 1px solid #f5f0e8; }
     .detail-table tr:last-child td { border-bottom: none; }
 
-    /* ── Colours ─────────────────────────────────────────────── */
     .positive { color: #5a9a5a; }
     .negative { color: #c0392b; }
-
-    /* ── Misc ────────────────────────────────────────────────── */
-    .placeholder-card { background: #f5f2eb; border: 1px dashed #d4c4a0; border-radius: 6px; padding: 32px; text-align: center; color: #c4b48a; }
-    .placeholder-card p { font-size: 14px; margin-top: 6px; }
     .loading   { text-align: center; padding: 40px; color: #b8a888; font-size: 14px; }
     .error-msg { background: #fdf0f0; border: 1px solid #f0c8c8; border-radius: 6px; padding: 16px; color: #c0392b; font-size: 14px; }
+    .placeholder-card { background: #f5f2eb; border: 1px dashed #d4c4a0; border-radius: 6px; padding: 32px; text-align: center; color: #c4b48a; }
+    .placeholder-card p { font-size: 14px; margin-top: 6px; }
     .raw-toggle { margin-top: 20px; }
     .raw-toggle summary { cursor: pointer; list-style: none; display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #b8a888; border: 1px solid #e8dcc8; border-radius: 4px; padding: 5px 12px; background: #fff; user-select: none; }
     .raw-toggle summary:hover, .raw-toggle[open] summary { color: #8b6914; border-color: #8b6914; }
     [data-min-role] { transition: opacity 0.15s; }
+
+    /* S&M */
+    .sm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; }
+    .sm-card { background: #fff; border: 1px dashed #d4c4a0; border-radius: 6px; padding: 16px 18px; }
+    .sm-card-title { font-size: 12px; font-weight: 600; color: #8b6914; margin-bottom: 8px; }
+    .sm-card-metrics { list-style: none; }
+    .sm-card-metrics li { font-size: 11px; color: #b8a888; padding: 3px 0; border-bottom: 1px solid #f5f0e8; display: flex; align-items: center; gap: 6px; }
+    .sm-card-metrics li:last-child { border-bottom: none; }
+    .sm-card-metrics li::before { content: '—'; color: #d4c4a0; }
   </style>
 </head>
 <body>
@@ -185,84 +189,24 @@
 
   <section class="section">
     <h2 class="section-title">External Projects <span class="badge soon">Coming Soon</span></h2>
-    <div class="placeholder-card">
-      <strong>Restoration &amp; Client Interiors</strong>
-      <p>Connect your external project data to see KPIs here.</p>
-    </div>
+    <div class="placeholder-card"><strong>Restoration &amp; Client Interiors</strong><p>Connect your external project data to see KPIs here.</p></div>
   </section>
 
   <section class="section">
     <h2 class="section-title">Initiators <span class="badge soon">Coming Soon</span></h2>
-    <div class="placeholder-card">
-      <strong>Interiors &middot; Home Automation &middot; Furniture</strong>
-      <p>Connect your initiator venture data to see KPIs here.</p>
-    </div>
+    <div class="placeholder-card"><strong>Interiors &middot; Home Automation &middot; Furniture</strong><p>Connect your initiator venture data to see KPIs here.</p></div>
   </section>
 
   <section class="section">
     <h2 class="section-title">Sales &amp; Marketing <span class="badge soon">Coming Soon</span></h2>
     <p style="font-size:12px;color:#b8a888;margin-bottom:20px">Connect your CRM and campaign data to activate these KPIs.</p>
     <div class="sm-grid">
-      <div class="sm-card">
-        <div class="sm-card-title">Sales Funnel</div>
-        <ul class="sm-card-metrics">
-          <li>Inquiries this month</li>
-          <li>Site visits</li>
-          <li>EOIs / bookings</li>
-          <li>Registrations</li>
-          <li>Closures</li>
-          <li>Funnel conversion %</li>
-        </ul>
-      </div>
-      <div class="sm-card">
-        <div class="sm-card-title">Inventory Status</div>
-        <ul class="sm-card-metrics">
-          <li>Total units per project</li>
-          <li>Available / Reserved / Sold</li>
-          <li>Sell-through %</li>
-          <li>Avg days on market</li>
-          <li>Unsold inventory value</li>
-        </ul>
-      </div>
-      <div class="sm-card">
-        <div class="sm-card-title">Revenue Pipeline</div>
-        <ul class="sm-card-metrics">
-          <li>Booked revenue</li>
-          <li>Registered revenue</li>
-          <li>Closed / collected</li>
-          <li>Expected collections (30/60/90d)</li>
-          <li>Demand note pipeline</li>
-        </ul>
-      </div>
-      <div class="sm-card">
-        <div class="sm-card-title">Pricing Tracker</div>
-        <ul class="sm-card-metrics">
-          <li>Launch price vs current ₹/sft</li>
-          <li>Price appreciation %</li>
-          <li>Competitor benchmark ₹/sft</li>
-          <li>Premium vs market (%)</li>
-        </ul>
-      </div>
-      <div class="sm-card">
-        <div class="sm-card-title">Channel Performance</div>
-        <ul class="sm-card-metrics">
-          <li>Inquiries by channel</li>
-          <li>Conversions by channel</li>
-          <li>Cost per inquiry / booking</li>
-          <li>Top broker performance</li>
-          <li>Digital vs direct vs referral</li>
-        </ul>
-      </div>
-      <div class="sm-card">
-        <div class="sm-card-title">Customer Profile</div>
-        <ul class="sm-card-metrics">
-          <li>End-user vs investor ratio</li>
-          <li>Buyer geography</li>
-          <li>Repeat / referral buyers</li>
-          <li>Avg ticket size</li>
-          <li>Payment plan preference</li>
-        </ul>
-      </div>
+      <div class="sm-card"><div class="sm-card-title">Sales Funnel</div><ul class="sm-card-metrics"><li>Inquiries this month</li><li>Site visits</li><li>EOIs / bookings</li><li>Registrations</li><li>Closures &amp; funnel %</li></ul></div>
+      <div class="sm-card"><div class="sm-card-title">Inventory Status</div><ul class="sm-card-metrics"><li>Total / Available / Sold</li><li>Sell-through %</li><li>Avg days on market</li><li>Unsold inventory value</li></ul></div>
+      <div class="sm-card"><div class="sm-card-title">Revenue Pipeline</div><ul class="sm-card-metrics"><li>Booked revenue</li><li>Registered revenue</li><li>Expected collections 30/60/90d</li><li>Demand note pipeline</li></ul></div>
+      <div class="sm-card"><div class="sm-card-title">Pricing</div><ul class="sm-card-metrics"><li>Launch vs current ₹/sft</li><li>Price appreciation %</li><li>Competitor benchmark</li></ul></div>
+      <div class="sm-card"><div class="sm-card-title">Channel Performance</div><ul class="sm-card-metrics"><li>Inquiries by channel</li><li>Cost per inquiry / booking</li><li>Top broker performance</li><li>Digital vs direct vs referral</li></ul></div>
+      <div class="sm-card"><div class="sm-card-title">Customer Profile</div><ul class="sm-card-metrics"><li>End-user vs investor %</li><li>Buyer geography</li><li>Repeat / referral buyers</li><li>Avg ticket size</li></ul></div>
     </div>
   </section>
 </main>
@@ -272,66 +216,51 @@
 
 // ── Role system ───────────────────────────────────────────────────────────────
 const ROLE_LEVEL = { md: 1, mgmt: 2, gm: 3, pm: 4 };
-
 function applyRole(role) {
   localStorage.setItem('kpi-role', role);
   const level = ROLE_LEVEL[role] || 2;
   document.querySelectorAll('[data-min-role]').forEach(el => {
-    const min = ROLE_LEVEL[el.dataset.minRole] || 1;
-    el.style.display = level >= min ? '' : 'none';
+    el.style.display = level >= (ROLE_LEVEL[el.dataset.minRole] || 1) ? '' : 'none';
   });
   const sel = document.getElementById('role-select');
   if (sel && sel.value !== role) sel.value = role;
 }
-
 document.getElementById('role-select').addEventListener('change', e => applyRole(e.target.value));
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const fmt  = n => typeof n === 'number' ? n.toFixed(2) : String(n);
-const fmtC = n => typeof n === 'number' ? (n < 0 ? `−₹${Math.abs(n).toFixed(2)}` : `+₹${n.toFixed(2)}`) : '';
-const pct  = (spent, bal) => { const t = spent + bal; return t > 0 ? Math.round((spent / t) * 100) : 0; };
+const fmtC = n => n < 0 ? `−₹${Math.abs(n).toFixed(2)}` : `+₹${n.toFixed(2)}`;
+const pct  = (s, b) => { const t = s + b; return t > 0 ? Math.round((s / t) * 100) : 0; };
 
 function calcProject(p) {
   const b = p.financial.building || {}, inf = p.financial.infra || {};
   const totalSpent   = (b.spent   || 0) + (inf.spent   || 0);
   const totalBalance = (b.balance || 0) + (inf.balance || 0);
-  const totalBudget  = totalSpent + totalBalance;
-  const totalSavings = (b.impactCr || 0) + (inf.impactCr || 0);
+  const totalBudget  = totalSpent + totalBalance;          // current projection (= sanctioned + impact)
+  const totalSavings = (b.impactCr || 0) + (inf.impactCr || 0); // negative = under budget
+  const originalBudget = totalBudget - totalSavings;       // original sanctioned budget
   const utilPct      = pct(totalSpent, totalBalance);
-  return { totalSpent, totalBalance, totalBudget, totalSavings, utilPct };
+  return { totalSpent, totalBalance, totalBudget, totalSavings, originalBudget, utilPct };
 }
 
-function varClass(v) {
-  if (v <= -5) return 'var-great';
-  if (v <= 0)  return 'var-good';
-  if (v <= 3)  return 'var-warn';
-  return 'var-bad';
-}
-function varFmt(v) {
-  const sign = v < 0 ? '▼ ' : v > 0 ? '▲ ' : '— ';
-  return sign + Math.abs(v).toFixed(1) + '%';
-}
+function varClass(v) { return v <= -5 ? 'var-great' : v <= 0 ? 'var-good' : v <= 3 ? 'var-warn' : 'var-bad'; }
+function varFmt(v)   { return (v < 0 ? '▼ ' : v > 0 ? '▲ ' : '— ') + Math.abs(v).toFixed(1) + '%'; }
 
-// Phase completion colour for heat map
 function phaseColor(p, na) {
-  if (na)       return { bg: '#e8e4dc', text: '#b8a888' };
-  if (p >= 1)   return { bg: '#5a9a5a', text: '#fff' };
+  if (na)        return { bg: '#e8e4dc', text: '#b8a888' };
+  if (p >= 1)    return { bg: '#5a9a5a', text: '#fff' };
   if (p >= 0.75) return { bg: '#7ab87a', text: '#fff' };
   if (p >= 0.5)  return { bg: '#d4a84b', text: '#fff' };
   if (p >= 0.25) return { bg: '#e8c070', text: '#3a3028' };
   if (p > 0)     return { bg: '#f5dfa0', text: '#3a3028' };
   return { bg: '#f0e8d8', text: '#c8b898' };
 }
-
-// Mini phase strip colour (simpler 3-band)
-function phaseSegColor(approxPct) {
-  if (approxPct >= 0.9) return '#5a9a5a';
-  if (approxPct >= 0.5) return '#d4a84b';
-  if (approxPct > 0)    return '#e8c070';
-  return '#f0e8d8';
+function phaseSegColor(p) {
+  return p >= 0.9 ? '#5a9a5a' : p >= 0.5 ? '#d4a84b' : p > 0 ? '#e8c070' : '#f0e8d8';
 }
+function matColor(p) { return p >= 100 ? '#5a9a5a' : p >= 60 ? '#d4a84b' : '#a0522d'; }
 
-// ── Load & render ─────────────────────────────────────────────────────────────
+// ── Main ──────────────────────────────────────────────────────────────────────
 async function loadDashboard() {
   const container = document.getElementById('internal-content');
   try {
@@ -339,318 +268,269 @@ async function loadDashboard() {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
     document.getElementById('last-updated').textContent = `Last updated: ${data.lastUpdated}`;
-    renderInternalProjects(data.internalProjects, data.scheduleData, container);
+    renderInternalProjects(data.internalProjects, data.scheduleData, data.materials || [], container);
   } catch (err) {
     container.innerHTML = `<div class="error-msg">Failed to load data: ${err.message}</div>`;
   }
 }
 
-function renderInternalProjects(projects, scheduleData, container) {
-  const calcs         = projects.map(calcProject);
-  const portSpent     = calcs.reduce((s, c) => s + c.totalSpent,   0);
-  const portBudget    = calcs.reduce((s, c) => s + c.totalBudget,  0);
-  const portSavings   = calcs.reduce((s, c) => s + c.totalSavings, 0);
-  const portRemaining = portBudget - portSpent;
-  const underBudget   = projects.filter(p => p.status === 'green').length;
-  const mostAdvanced  = projects[calcs.indexOf(calcs.reduce((a, b) => a.utilPct > b.utilPct ? a : b))];
-  const ochre         = scheduleData && scheduleData.ochre;
+function renderInternalProjects(projects, scheduleData, materials, container) {
+  const calcs       = projects.map(calcProject);
+  const portSpent   = calcs.reduce((s, c) => s + c.totalSpent,    0);
+  const portBudget  = calcs.reduce((s, c) => s + c.originalBudget,0); // original sanctioned
+  const portCurrent = calcs.reduce((s, c) => s + c.totalBudget,   0); // current projection
+  const portSavings = calcs.reduce((s, c) => s + c.totalSavings,  0);
+  const underBudget = projects.filter(p => p.status === 'green').length;
+  const ochre       = scheduleData && scheduleData.ochre;
+
+  // Material lookup by project name
+  const matByProject = {};
+  for (const m of materials) matByProject[m.name.toLowerCase()] = m;
 
   const html = [];
 
   // ── 1. Insight strip (all roles) ─────────────────────────────────────────
   html.push(`<div class="insights-strip">`);
-  html.push(insightCard('Portfolio Budget', `₹${fmt(portBudget)} Cr`, 'across all projects'));
-  html.push(insightCard('Total Spent',      `₹${fmt(portSpent)} Cr`,  `${Math.round((portSpent/portBudget)*100)}% utilised`));
-  html.push(insightCard('Remaining',        `₹${fmt(portRemaining)} Cr`, 'uncommitted budget'));
-  html.push(insightCard('Net Savings',      `${portSavings <= 0 ? '−' : '+'}₹${Math.abs(portSavings).toFixed(2)} Cr`,
-    portSavings <= 0 ? 'under budget — great' : 'cost overrun', portSavings <= 0 ? 'green' : 'amber'));
-  html.push(insightCard('On Track', `${underBudget} / ${projects.length}`, 'projects under budget', underBudget === projects.length ? 'green' : 'amber'));
-  if (ochre) {
-    const avgPct = Math.round(ochre.townhouses.summary.avgCompletion * 100);
-    html.push(insightCard('Ochre Progress', `${avgPct}%`, `${ochre.townhouses.summary.totalPlots} units · avg construction`));
-  } else {
-    html.push(insightCard('Most Advanced', mostAdvanced.name, `${calcs[projects.indexOf(mostAdvanced)].utilPct}% budget used`));
-  }
+  html.push(ic('Sanctioned Budget', `₹${fmt(portBudget)} Cr`, 'original approved total'));
+  html.push(ic('Current Projection', `₹${fmt(portCurrent)} Cr`, portSavings <= 0 ? `₹${Math.abs(portSavings).toFixed(2)} Cr under budget` : `₹${portSavings.toFixed(2)} Cr over budget`, portSavings <= 0 ? 'green' : 'amber'));
+  html.push(ic('Spent to Date', `₹${fmt(portSpent)} Cr`, `${Math.round((portSpent/portCurrent)*100)}% of current projection`));
+  html.push(ic('Still to Spend', `₹${fmt(portCurrent - portSpent)} Cr`, 'uncommitted balance'));
+  html.push(ic('On Track', `${underBudget} / ${projects.length}`, 'projects under budget', underBudget === projects.length ? 'green' : 'amber'));
+  if (ochre) html.push(ic('Ochre Progress', `${Math.round(ochre.townhouses.summary.avgCompletion * 100)}%`, `${ochre.townhouses.summary.totalPlots} units · avg construction`));
   html.push(`</div>`);
 
-  // ── 2. Portfolio overview: donut + project status (all roles) ─────────────
+  // ── 2. Portfolio overview (all roles) ─────────────────────────────────────
   html.push(`<div class="portfolio-overview">`);
-  html.push(`<div class="donut-wrap"><div class="chart-title">Budget Split</div><canvas id="chart-donut" width="184" height="184"></canvas></div>`);
+  html.push(`<div class="donut-wrap"><div class="chart-title" style="align-self:flex-start">Budget Split</div><canvas id="chart-donut" width="168" height="168"></canvas></div>`);
 
   html.push(`<div class="project-status-grid">`);
   projects.forEach((p, i) => {
-    const { totalSpent, totalBudget, totalSavings, utilPct } = calcs[i];
-    const savingClass = totalSavings <= 0 ? 'positive' : 'negative';
-
-    // Mini phase strip for Ochre
+    const { totalSpent, totalBudget, originalBudget, totalSavings, utilPct } = calcs[i];
     let phaseMini = '';
     if (ochre && p.name.toLowerCase().includes('ochre')) {
-      const ps = ochre.townhouses.summary.phaseSummary;
+      const ps   = ochre.townhouses.summary.phaseSummary;
       const segs = Object.values(ps).map(s => {
         const approx = s.total ? (s.done + s.inProgress * 0.5) / s.total : 0;
         return `<div class="ps-phase-seg" style="background:${phaseSegColor(approx)}" title="${s.label}: ${s.done} done, ${s.inProgress} in progress"></div>`;
       }).join('');
       phaseMini = `<div class="ps-phases">${segs}</div>`;
     }
-
     html.push(`
       <div class="project-status-item">
         <span class="rag-dot ${p.status}"></span>
         <div class="ps-info">
           <div class="ps-name">${p.name}</div>
-          <div class="ps-detail">${utilPct}% utilised &middot; ₹${fmt(totalSpent)} / ₹${fmt(totalBudget)} Cr</div>
-          <div class="ps-savings ${savingClass}">${fmtC(totalSavings)} Cr net impact</div>
+          <div class="ps-nums">₹${fmt(originalBudget)} Cr budget · ${utilPct}% spent</div>
+          <div class="ps-impact ${totalSavings <= 0 ? 'positive' : 'negative'}">${fmtC(totalSavings)} Cr vs budget</div>
           ${phaseMini}
         </div>
-      </div>
-    `);
+      </div>`);
   });
   html.push(`</div></div>`);
 
-  // ── 3. Financial detail (mgmt+) ───────────────────────────────────────────
+  // ── 3. Project financial cards (mgmt+) ────────────────────────────────────
   html.push(`<div data-min-role="mgmt">`);
-
-  // Project cards
   html.push(`<div class="cards-grid">`);
   projects.forEach((p, i) => {
-    const { totalSpent, totalBalance, totalBudget, totalSavings, utilPct } = calcs[i];
-    const b   = p.financial.building || {};
-    const inf = p.financial.infra    || {};
-    const bSave = b.impactCr   || 0;
-    const iSave = inf.impactCr || 0;
+    const { totalSpent, totalBalance, totalBudget, totalSavings, originalBudget, utilPct } = calcs[i];
 
-    // Phase mini strip for Ochre card
     let phaseMiniCard = '';
     if (ochre && p.name.toLowerCase().includes('ochre')) {
       const ps = ochre.townhouses.summary.phaseSummary;
       const segs = Object.values(ps).map(s => {
         const approx = s.total ? (s.done + s.inProgress * 0.5) / s.total : 0;
-        return `<div class="phase-mini-seg" style="background:${phaseSegColor(approx)}" title="${s.label}: ${s.done} done, ${s.inProgress} in progress"></div>`;
+        return `<div class="phase-mini-seg" style="background:${phaseSegColor(approx)}" title="${s.label}"></div>`;
       }).join('');
       phaseMiniCard = `
-        <div style="margin-top:8px">
+        <div style="margin-top:10px">
           <div style="font-size:9px;color:#b8a888;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px">Construction phases</div>
           <div class="phase-mini">${segs}</div>
-          <div style="display:flex;justify-content:space-between;font-size:8px;color:#c8b898;margin-top:2px">
-            <span>Found.</span><span>GF</span><span>FF</span><span>SF</span><span>Finish</span>
-          </div>
+          <div class="phase-mini-labels"><span>Found</span><span>GF</span><span>FF</span><span>SF</span><span>Finish</span></div>
         </div>`;
     }
 
     html.push(`
       <div class="project-card">
-        <div class="project-name"><span class="rag-dot ${p.status}"></span>${p.name}</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin:10px 0 8px">
-          <div style="background:#f5f2eb;border-radius:4px;padding:8px 6px;text-align:center">
-            <div style="font-size:9px;color:#b8a888;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px;white-space:nowrap">Budget</div>
-            <div style="font-size:14px;font-weight:700;color:#3a3028">₹${fmt(totalBudget)}</div>
-            <div style="font-size:9px;color:#b8a888">Cr</div>
+        <div class="project-card-name"><span class="rag-dot ${p.status}"></span>${p.name}</div>
+        <div class="budget-triple">
+          <div class="budget-cell" style="background:#f5f2eb">
+            <div class="bc-label" style="color:#b8a888">Budget</div>
+            <div class="bc-val">₹${fmt(originalBudget)}</div>
+            <div class="bc-sub" style="color:#b8a888">Cr sanctioned</div>
           </div>
-          <div style="background:#e8f0e8;border-radius:4px;padding:8px 6px;text-align:center">
-            <div style="font-size:9px;color:#7aaa7a;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px;white-space:nowrap">Spent</div>
-            <div style="font-size:14px;font-weight:700;color:#3a3028">₹${fmt(totalSpent)}</div>
-            <div style="font-size:9px;color:#7aaa7a">Cr</div>
+          <div class="budget-cell" style="background:#e8f0e8">
+            <div class="bc-label" style="color:#7aaa7a">Spent</div>
+            <div class="bc-val">₹${fmt(totalSpent)}</div>
+            <div class="bc-sub" style="color:#7aaa7a">Cr to date</div>
           </div>
-          <div style="background:#fdf6e8;border-radius:4px;padding:8px 6px;text-align:center">
-            <div style="font-size:9px;color:#c8901a;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px;white-space:nowrap">To Spend</div>
-            <div style="font-size:14px;font-weight:700;color:#3a3028">₹${fmt(totalBalance)}</div>
-            <div style="font-size:9px;color:#c8901a">Cr</div>
-          </div>
-        </div>
-        <div class="progress-wrap">
-          <div class="progress-label"><span>Utilisation</span><span>${utilPct}%</span></div>
-          <div class="progress-bar"><div class="progress-bar-fill${utilPct >= 95 ? ' near-full' : ''}" style="width:${utilPct}%"></div></div>
-        </div>
-        <div style="margin-top:8px;display:flex;gap:6px">
-          <div style="flex:1;background:#f5f2eb;border-radius:4px;padding:6px 8px">
-            <div style="font-size:9px;color:#b8a888;text-transform:uppercase;letter-spacing:.4px;margin-bottom:2px">Bldg saving</div>
-            <div class="${bSave <= 0 ? 'positive' : 'negative'}" style="font-weight:700;font-size:12px">${fmtC(bSave)} Cr</div>
-          </div>
-          <div style="flex:1;background:#f5f2eb;border-radius:4px;padding:6px 8px">
-            <div style="font-size:9px;color:#b8a888;text-transform:uppercase;letter-spacing:.4px;margin-bottom:2px">Infra saving</div>
-            <div class="${iSave <= 0 ? 'positive' : 'negative'}" style="font-weight:700;font-size:12px">${fmtC(iSave)} Cr</div>
+          <div class="budget-cell" style="background:#fdf6e8">
+            <div class="bc-label" style="color:#c8901a">To Spend</div>
+            <div class="bc-val">₹${fmt(totalBalance)}</div>
+            <div class="bc-sub" style="color:#c8901a">Cr remaining</div>
           </div>
         </div>
-        <div style="margin-top:5px;background:${totalSavings<=0?'#eef5ee':'#fdf0f0'};border-radius:4px;padding:5px 8px;display:flex;justify-content:space-between;align-items:center">
-          <div style="font-size:9px;color:#b8a888;text-transform:uppercase;letter-spacing:.4px">Net impact</div>
-          <div class="${totalSavings<=0?'positive':'negative'}" style="font-weight:700;font-size:13px">${fmtC(totalSavings)} Cr</div>
+        <div class="util-bar"><div class="util-fill${utilPct >= 95 ? ' near-full' : ''}" style="width:${utilPct}%"></div></div>
+        <div style="font-size:10px;color:#b8a888;margin-bottom:8px">${utilPct}% of current projection spent</div>
+        <div class="impact-row">
+          <span style="font-size:10px;color:#b8a888;text-transform:uppercase;letter-spacing:.4px">vs sanctioned budget</span>
+          <span class="${totalSavings <= 0 ? 'positive' : 'negative'}" style="font-weight:700;font-size:13px">${fmtC(totalSavings)} Cr</span>
         </div>
         ${phaseMiniCard}
-      </div>
-    `);
+      </div>`);
   });
-  html.push(`</div>`);
-
-  // Budget utilisation bars
-  html.push(`<div class="spend-bars chart-wrap"><div class="chart-title">Budget Utilisation by Project</div>`);
-  projects.forEach((p, i) => {
-    const { totalSpent, totalBudget, utilPct } = calcs[i];
-    html.push(`
-      <div class="spend-bar-row">
-        <div class="spend-bar-label">${p.name}</div>
-        <div class="spend-bar-track"><div class="spend-bar-fill${utilPct>=95?' near-full':''}" style="width:${utilPct}%"></div></div>
-        <div class="spend-bar-nums">₹${fmt(totalSpent)} / ₹${fmt(totalBudget)} Cr · ${utilPct}%</div>
-      </div>
-    `);
-  });
-  html.push(`</div>`);
-
-  html.push(`</div>`); // end mgmt
+  html.push(`</div></div>`); // end cards-grid + mgmt
 
   // ── 4. Cost analysis (gm+) ────────────────────────────────────────────────
   html.push(`<div data-min-role="gm">`);
 
-  html.push(`
-    <div class="charts-row">
-      <div class="chart-wrap">
-        <div class="chart-title">Building Cost /sft — Budget vs Projected</div>
-        <canvas id="chart-building" height="120"></canvas>
-      </div>
-      <div class="chart-wrap">
-        <div class="chart-title">Infra Cost /sft — Budget vs Projected</div>
-        <canvas id="chart-infra" height="120"></canvas>
-      </div>
+  // Savings chart
+  html.push(`<div class="charts-row">
+    <div class="chart-wrap" style="margin-bottom:0">
+      <div class="chart-title">Savings / Overrun vs Sanctioned Budget (₹ Cr)</div>
+      <canvas id="chart-savings" height="140"></canvas>
     </div>
-    <div class="chart-wrap">
-      <div class="chart-title">Savings / Overrun by Project (₹ Cr) — negative = saved</div>
-      <canvas id="chart-savings" height="70"></canvas>
-    </div>
-  `);
+    <div class="chart-wrap" style="margin-bottom:0">
+      <div class="chart-title">Cost Variance — Budget vs Projected /sft</div>
+      <table class="variance-table">`);
 
-  // Cost variance matrix
-  html.push(`
-    <div class="chart-wrap">
-      <div class="chart-title">Cost Variance Summary — Budget vs Projected /sft</div>
-      <table class="variance-table">
-        <thead>
-          <tr>
-            <th rowspan="2">Project</th>
-            <th colspan="3" style="border-bottom:1px solid #e8dcc8">Building Cost /sft</th>
-            <th colspan="3" style="border-bottom:1px solid #e8dcc8">Infra Cost /sft</th>
-          </tr>
-          <tr>
-            <th>Budget</th><th>Projected</th><th>Variance</th>
-            <th>Budget</th><th>Projected</th><th>Variance</th>
-          </tr>
-        </thead>
-        <tbody>
-  `);
+  // Variance table inline in chart-wrap
+  html.push(`<thead>
+    <tr>
+      <th rowspan="2">Project</th>
+      <th colspan="3" style="border-bottom:1px solid #e8dcc8">Building /sft</th>
+      <th colspan="3" style="border-bottom:1px solid #e8dcc8">Infra /sft</th>
+    </tr>
+    <tr><th>Budget</th><th>Projected</th><th>Var</th><th>Budget</th><th>Projected</th><th>Var</th></tr>
+    </thead><tbody>`);
+
   projects.forEach(p => {
-    const b   = p.financial.building || {};
-    const inf = p.financial.infra    || {};
-    const bVar = b.budgetPerSft ? ((b.projectedPerSft - b.budgetPerSft) / b.budgetPerSft * 100) : 0;
-    const iVar = inf.budgetPerSft ? ((inf.projectedPerSft - inf.budgetPerSft) / inf.budgetPerSft * 100) : 0;
-    html.push(`
-      <tr>
-        <td>${p.name}</td>
-        <td>₹${Math.round(b.budgetPerSft || 0)}</td>
-        <td>₹${Math.round(b.projectedPerSft || 0)}</td>
-        <td class="${varClass(bVar)}">${varFmt(bVar)}</td>
-        <td>₹${Math.round(inf.budgetPerSft || 0)}</td>
-        <td>₹${Math.round(inf.projectedPerSft || 0)}</td>
-        <td class="${varClass(iVar)}">${varFmt(iVar)}</td>
-      </tr>
-    `);
+    const b = p.financial.building || {}, inf = p.financial.infra || {};
+    const bVar = b.budgetPerSft   ? (b.projectedPerSft   - b.budgetPerSft)   / b.budgetPerSft   * 100 : 0;
+    const iVar = inf.budgetPerSft ? (inf.projectedPerSft - inf.budgetPerSft) / inf.budgetPerSft * 100 : 0;
+    html.push(`<tr>
+      <td>${p.name}</td>
+      <td>₹${Math.round(b.budgetPerSft||0)}</td><td>₹${Math.round(b.projectedPerSft||0)}</td><td class="${varClass(bVar)}">${varFmt(bVar)}</td>
+      <td>₹${Math.round(inf.budgetPerSft||0)}</td><td>₹${Math.round(inf.projectedPerSft||0)}</td><td class="${varClass(iVar)}">${varFmt(iVar)}</td>
+    </tr>`);
   });
-  html.push(`</tbody></table></div>`);
+  html.push(`</tbody></table></div></div>`); // end variance table + chart-wrap + charts-row
 
-  // Construction section
-  if (ochre) {
-    const { townhouses, infrastructure } = ochre;
+  // Materials section
+  html.push(`<div class="chart-wrap">
+    <div class="chart-title">Material Procurement Status</div>
+    <div class="materials-grid">`);
 
-    html.push(`
-      <div class="chart-wrap">
-        <div class="chart-title">Ochre — Construction Phase Progress &nbsp;·&nbsp; ${townhouses.summary.totalPlots} units &nbsp;·&nbsp; ${Math.round(townhouses.summary.avgCompletion * 100)}% avg complete</div>
-    `);
-    for (const s of Object.values(townhouses.summary.phaseSummary)) {
-      if (!s.total) continue;
-      const donePct = Math.round((s.done       / s.total) * 100);
-      const wipPct  = Math.round((s.inProgress / s.total) * 100);
-      const nosPct  = Math.round((s.notStarted / s.total) * 100);
-      const doneLabel = donePct >= 14 ? `${donePct}%` : '';
-      html.push(`
-        <div class="phase-row">
+  projects.forEach(p => {
+    const matData = matByProject[p.name.toLowerCase()];
+    if (matData && matData.materials.length) {
+      html.push(`<div class="material-project-card">
+        <div class="material-project-name">${p.name}</div>`);
+      matData.materials.forEach(m => {
+        const col = matColor(m.procuredPct);
+        html.push(`<div class="material-row">
+          <div class="material-top">
+            <span class="material-name">${m.name}</span>
+            <span class="material-pct">${m.procuredPct}% procured</span>
+          </div>
+          <div class="material-bar"><div class="material-fill" style="width:${m.procuredPct}%;background:${col}"></div></div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span class="material-detail">${m.procuredQty.toLocaleString()} / ${m.budgetQty.toLocaleString()} ${m.unit}</span>
+            ${m.toBeSpentCr > 0 ? `<span class="material-pending-cost">₹${m.toBeSpentCr.toFixed(2)} Cr pending</span>` : `<span style="font-size:10px;color:#5a9a5a">Fully ordered</span>`}
+          </div>
+        </div>`);
+      });
+      html.push(`<div class="material-total">
+        <span style="color:#b8a888;font-size:11px">Total pending spend</span>
+        <span style="font-weight:700;color:#d48a20">₹${matData.totalToBeSpentCr.toFixed(2)} Cr</span>
+      </div></div>`);
+    } else {
+      html.push(`<div class="coming-soon-card"><strong>${p.name}</strong>Material data not available yet</div>`);
+    }
+  });
+  html.push(`</div></div>`); // end materials-grid + chart-wrap
+
+  // Construction — Ochre full, others coming soon
+  html.push(`<div class="chart-wrap">
+    <div class="chart-title">Construction Progress</div>
+    <div class="materials-grid">`);
+
+  projects.forEach(p => {
+    if (ochre && p.name.toLowerCase().includes('ochre')) {
+      const { townhouses } = ochre;
+      html.push(`<div class="material-project-card" style="grid-column:1/-1;max-width:none">
+        <div class="material-project-name">Ochre · ${townhouses.summary.totalPlots} units · ${Math.round(townhouses.summary.avgCompletion * 100)}% avg</div>`);
+
+      for (const s of Object.values(townhouses.summary.phaseSummary)) {
+        if (!s.total) continue;
+        const donePct = Math.round((s.done / s.total) * 100);
+        const wipPct  = Math.round((s.inProgress / s.total) * 100);
+        const nosPct  = Math.round((s.notStarted / s.total) * 100);
+        html.push(`<div class="phase-row">
           <div class="phase-label">${s.label}</div>
           <div class="phase-track">
-            <div class="phase-done" style="width:${donePct}%">${doneLabel}</div>
+            <div class="phase-done" style="width:${donePct}%">${donePct >= 14 ? donePct+'%' : ''}</div>
             <div class="phase-wip"  style="width:${wipPct}%"></div>
             <div class="phase-nos"  style="width:${nosPct}%"></div>
           </div>
           <div class="phase-counts">${s.done} done · ${s.inProgress} in progress${s.notStarted ? ` · ${s.notStarted} not started` : ''}</div>
-        </div>
-      `);
-    }
-    // Legend
-    html.push(`
-      <div style="display:flex;gap:16px;margin-top:14px;flex-wrap:wrap">
+        </div>`);
+      }
+
+      html.push(`<div style="display:flex;gap:16px;margin-top:12px;flex-wrap:wrap">
         <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:#8b6914"><span style="display:inline-block;width:14px;height:10px;background:#5a9a5a;border-radius:2px"></span>Complete</div>
         <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:#8b6914"><span style="display:inline-block;width:14px;height:10px;background:#d4a84b;border-radius:2px"></span>In Progress</div>
         <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:#8b6914"><span style="display:inline-block;width:14px;height:10px;background:#e8dcc8;border-radius:2px"></span>Not Started</div>
-      </div>
-    `);
-    html.push(`</div>`);
+      </div></div>`);
 
-    html.push(`
-      <div class="chart-wrap">
-        <div class="chart-title">Ochre — Infrastructure Progress &nbsp;·&nbsp; ${Math.round(infrastructure.avgProgress * 100)}% avg</div>
-        <div class="infra-grid">
-    `);
-    infrastructure.items.forEach(item => {
-      const p = Math.round(item.progress * 100);
-      const col = p >= 100 ? '#5a9a5a' : p >= 50 ? '#d4a84b' : '#8b6914';
-      html.push(`
-        <div class="infra-item">
+      // Infra strip
+      html.push(`<div class="material-project-card" style="grid-column:1/-1">
+        <div class="material-project-name">Ochre — Infrastructure</div>
+        <div class="infra-grid">`);
+      ochre.infrastructure.items.forEach(item => {
+        const p = Math.round(item.progress * 100);
+        const col = p >= 100 ? '#5a9a5a' : p >= 50 ? '#d4a84b' : '#8b6914';
+        html.push(`<div class="infra-item">
           <div class="infra-item-name">${item.name}</div>
           <div class="infra-item-bar"><div class="infra-item-fill" style="width:${p}%;background:${col}"></div></div>
           <div class="infra-item-pct">${p}%</div>
-        </div>
-      `);
-    });
-    html.push(`</div></div>`);
-  }
+        </div>`);
+      });
+      html.push(`</div></div>`);
+
+    } else {
+      html.push(`<div class="coming-soon-card"><strong>${p.name}</strong>Construction tracking — coming soon</div>`);
+    }
+  });
+  html.push(`</div></div>`); // end construction section + chart-wrap
 
   html.push(`</div>`); // end gm
 
-  // ── 5. Unit-level detail (pm) ─────────────────────────────────────────────
+  // ── 5. Unit heat map (pm) ─────────────────────────────────────────────────
   html.push(`<div data-min-role="pm">`);
-
   if (ochre) {
     const { townhouses } = ochre;
-    const phases     = ['foundation','groundFloor','firstFloor','secondFloor','finishing'];
+    const phases = ['foundation','groundFloor','firstFloor','secondFloor','finishing'];
     const phaseNames = { foundation:'Foundation', groundFloor:'Ground Floor', firstFloor:'First Floor', secondFloor:'Second Floor', finishing:'Finishing' };
     const legendItems = [
-      { bg:'#5a9a5a', label:'100%' }, { bg:'#7ab87a', label:'≥75%' }, { bg:'#d4a84b', label:'≥50%' },
-      { bg:'#e8c070', label:'≥25%' }, { bg:'#f5dfa0', label:'>0%' }, { bg:'#f0e8d8', label:'0%' }, { bg:'#e8e4dc', label:'N/A' },
+      { bg:'#5a9a5a',label:'100%' },{ bg:'#7ab87a',label:'≥75%' },{ bg:'#d4a84b',label:'≥50%' },
+      { bg:'#e8c070',label:'≥25%' },{ bg:'#f5dfa0',label:'>0%' },{ bg:'#f0e8d8',label:'0%' },{ bg:'#e8e4dc',label:'N/A' },
     ];
-
-    html.push(`
-      <div class="chart-wrap">
-        <div class="chart-title">Ochre — Unit Construction Heat Map</div>
-        <div class="heatmap-legend">
-          ${legendItems.map(l => `<div class="heatmap-legend-item"><span class="heatmap-legend-swatch" style="background:${l.bg}"></span>${l.label}</div>`).join('')}
-        </div>
-        <div class="heatmap-wrap">
-          <table class="heatmap-table">
-            <thead>
-              <tr>
-                <th>Unit</th>
-                ${phases.map(k => `<th>${phaseNames[k]}</th>`).join('')}
-                <th>Overall</th>
-              </tr>
-            </thead>
-            <tbody>
-    `);
+    html.push(`<div class="chart-wrap">
+      <div class="chart-title">Ochre — Unit Construction Heat Map</div>
+      <div class="heatmap-legend">${legendItems.map(l=>`<div class="heatmap-legend-item"><span class="heatmap-legend-swatch" style="background:${l.bg}"></span>${l.label}</div>`).join('')}</div>
+      <div class="heatmap-wrap">
+        <table class="heatmap-table">
+          <thead><tr><th>Unit</th>${phases.map(k=>`<th>${phaseNames[k]}</th>`).join('')}<th>Overall</th></tr></thead>
+          <tbody>`);
     townhouses.plots.forEach(plot => {
       html.push(`<tr><td>${plot.plot}</td>`);
       phases.forEach(key => {
-        const ph  = plot.phases[key];
-        const na  = ph.pct === null;
-        const c   = phaseColor(ph.pct ?? 0, na);
-        const lbl = na ? 'N/A' : `${Math.round(ph.pct * 100)}%`;
-        html.push(`<td style="background:${c.bg};color:${c.text}">${lbl}</td>`);
+        const ph = plot.phases[key], na = ph.pct === null;
+        const c  = phaseColor(ph.pct ?? 0, na);
+        html.push(`<td style="background:${c.bg};color:${c.text}">${na ? 'N/A' : Math.round(ph.pct*100)+'%'}</td>`);
       });
       const oc = phaseColor(plot.overallPct, false);
-      html.push(`<td style="background:${oc.bg};color:${oc.text};font-size:11px">${Math.round(plot.overallPct * 100)}%</td></tr>`);
+      html.push(`<td style="background:${oc.bg};color:${oc.text};font-size:11px">${Math.round(plot.overallPct*100)}%</td></tr>`);
     });
     html.push(`</tbody></table></div></div>`);
   }
@@ -659,20 +539,17 @@ function renderInternalProjects(projects, scheduleData, container) {
   html.push(`<details class="raw-toggle"><summary>▸ Show raw financial data</summary>`);
   projects.forEach(p => {
     const b = p.financial.building, inf = p.financial.infra;
-    html.push(`
-      <div style="margin-top:16px">
-        <div style="font-weight:600;color:#8b6914;padding:8px 0;border-bottom:1px solid #e8dcc8;margin-bottom:4px">${p.name}</div>
-        <table class="detail-table">
-          <thead><tr><th>Category</th><th>Spent (Cr)</th><th>Balance (Cr)</th><th>Budget /sft</th><th>Projected /sft</th><th>Impact /sft</th><th>Impact (Cr)</th></tr></thead>
-          <tbody>
-            ${b ? `<tr><td>Building</td><td>₹${fmt(b.spent)}</td><td>₹${fmt(b.balance)}</td><td>₹${fmt(b.budgetPerSft)}</td><td>₹${fmt(b.projectedPerSft)}</td><td class="${b.impactPerSft<=0?'positive':'negative'}">${b.impactPerSft>0?'+':''}${fmt(b.impactPerSft)}</td><td class="${b.impactCr<=0?'positive':'negative'}">${b.impactCr>0?'+':''}${fmt(b.impactCr)}</td></tr>` : ''}
-            ${inf ? `<tr><td>Infra</td><td>₹${fmt(inf.spent)}</td><td>₹${fmt(inf.balance)}</td><td>₹${fmt(inf.budgetPerSft)}</td><td>₹${fmt(inf.projectedPerSft)}</td><td class="${inf.impactPerSft<=0?'positive':'negative'}">${inf.impactPerSft>0?'+':''}${fmt(inf.impactPerSft)}</td><td class="${inf.impactCr<=0?'positive':'negative'}">${inf.impactCr>0?'+':''}${fmt(inf.impactCr)}</td></tr>` : ''}
-          </tbody>
-        </table>
-      </div>
-    `);
+    html.push(`<div style="margin-top:16px">
+      <div style="font-weight:600;color:#8b6914;padding:8px 0;border-bottom:1px solid #e8dcc8;margin-bottom:4px">${p.name}</div>
+      <table class="detail-table">
+        <thead><tr><th>Category</th><th>Spent (Cr)</th><th>Balance (Cr)</th><th>Budget /sft</th><th>Projected /sft</th><th>Impact /sft</th><th>Impact (Cr)</th></tr></thead>
+        <tbody>
+          ${b?`<tr><td>Building</td><td>₹${fmt(b.spent)}</td><td>₹${fmt(b.balance)}</td><td>₹${fmt(b.budgetPerSft)}</td><td>₹${fmt(b.projectedPerSft)}</td><td class="${b.impactPerSft<=0?'positive':'negative'}">${b.impactPerSft>0?'+':''}${fmt(b.impactPerSft)}</td><td class="${b.impactCr<=0?'positive':'negative'}">${b.impactCr>0?'+':''}${fmt(b.impactCr)}</td></tr>`:''}
+          ${inf?`<tr><td>Infra</td><td>₹${fmt(inf.spent)}</td><td>₹${fmt(inf.balance)}</td><td>₹${fmt(inf.budgetPerSft)}</td><td>₹${fmt(inf.projectedPerSft)}</td><td class="${inf.impactPerSft<=0?'positive':'negative'}">${inf.impactPerSft>0?'+':''}${fmt(inf.impactPerSft)}</td><td class="${inf.impactCr<=0?'positive':'negative'}">${inf.impactCr>0?'+':''}${fmt(inf.impactCr)}</td></tr>`:''}
+        </tbody>
+      </table></div>`);
   });
-  html.push(`</details></div>`); // end pm
+  html.push(`</details></div>`);
 
   container.innerHTML = html.join('');
 
@@ -681,65 +558,35 @@ function renderInternalProjects(projects, scheduleData, container) {
 
   new Chart(document.getElementById('chart-donut'), {
     type: 'doughnut',
-    data: {
-      labels,
-      datasets: [{ data: calcs.map(c => c.totalBudget), backgroundColor: ['#8b6914','#b89040','#d4b86a','#e8d4a0'], borderWidth: 2, borderColor: '#fff' }],
-    },
-    options: {
-      responsive: false, cutout: '62%',
-      plugins: {
-        legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 }, padding: 8 } },
-        datalabels: { formatter: (v, ctx) => { const t = ctx.dataset.data.reduce((a,b)=>a+b,0); return Math.round(v/t*100)+'%'; }, color: '#fff', font: { size: 10, weight: '700' } },
-      },
-    },
-  });
-
-  const barDL = { anchor:'end', align:'end', offset:2, formatter: v => v > 0 ? '₹'+Math.round(v) : '', font:{size:9,weight:'600'}, color:'#8b6914' };
-  const barSc = { y:{beginAtZero:false,grid:{color:'#f0e8d8'},ticks:{callback:v=>'₹'+v}}, x:{grid:{display:false}} };
-
-  new Chart(document.getElementById('chart-building'), {
-    type: 'bar',
-    data: { labels, datasets: [
-      { label:'Budget /sft',    data:projects.map(p=>p.financial.building?.budgetPerSft||0),    backgroundColor:'#d4c4a0', borderRadius:4 },
-      { label:'Projected /sft', data:projects.map(p=>p.financial.building?.projectedPerSft||0), backgroundColor:'#8b6914', borderRadius:4 },
-    ]},
-    options: { responsive:true, layout:{padding:{top:20}}, plugins:{legend:{position:'top',labels:{boxWidth:12,font:{size:11}}},datalabels:barDL}, scales:barSc },
-  });
-
-  new Chart(document.getElementById('chart-infra'), {
-    type: 'bar',
-    data: { labels, datasets: [
-      { label:'Budget /sft',    data:projects.map(p=>p.financial.infra?.budgetPerSft||0),    backgroundColor:'#d4c4a0', borderRadius:4 },
-      { label:'Projected /sft', data:projects.map(p=>p.financial.infra?.projectedPerSft||0), backgroundColor:'#8b6914', borderRadius:4 },
-    ]},
-    options: { responsive:true, layout:{padding:{top:20}}, plugins:{legend:{position:'top',labels:{boxWidth:12,font:{size:11}}},datalabels:barDL}, scales:barSc },
+    data: { labels, datasets: [{ data: calcs.map(c=>c.originalBudget), backgroundColor:['#8b6914','#b89040','#d4b86a','#e8d4a0'], borderWidth:2, borderColor:'#fff' }] },
+    options: { responsive:false, cutout:'62%', plugins: { legend:{position:'bottom',labels:{boxWidth:10,font:{size:10},padding:8}}, datalabels:{formatter:(v,ctx)=>{const t=ctx.dataset.data.reduce((a,b)=>a+b,0);return Math.round(v/t*100)+'%';},color:'#fff',font:{size:10,weight:'700'}} } },
   });
 
   const savingsData = projects.map(p => +((p.financial.building?.impactCr||0)+(p.financial.infra?.impactCr||0)).toFixed(2));
   new Chart(document.getElementById('chart-savings'), {
     type: 'bar',
-    data: { labels, datasets: [{ label:'Net Impact (Cr)', data:savingsData, backgroundColor:savingsData.map(v=>v<=0?'#5a9a5a':'#c0392b'), borderRadius:4 }] },
+    data: { labels, datasets: [{ data:savingsData, backgroundColor:savingsData.map(v=>v<=0?'#5a9a5a':'#c0392b'), borderRadius:4 }] },
     options: {
-      responsive:true, layout:{padding:{top:20}},
+      responsive:true, layout:{padding:{top:24}},
       plugins: {
         legend:{display:false},
-        datalabels: {
-          anchor: ctx => ctx.dataset.data[ctx.dataIndex]<=0?'start':'end',
-          align:  ctx => ctx.dataset.data[ctx.dataIndex]<=0?'start':'end',
-          offset: 4,
-          formatter: v => (v<=0?'−':'+')+'₹'+Math.abs(v).toFixed(2)+' Cr',
+        datalabels:{
+          anchor:ctx=>ctx.dataset.data[ctx.dataIndex]<=0?'start':'end',
+          align:ctx=>ctx.dataset.data[ctx.dataIndex]<=0?'start':'end',
+          offset:4,
+          formatter:v=>(v<=0?'−':'+')+'₹'+Math.abs(v).toFixed(2)+' Cr',
           font:{size:11,weight:'700'},
-          color: ctx => ctx.dataset.data[ctx.dataIndex]<=0?'#5a9a5a':'#c0392b',
+          color:ctx=>ctx.dataset.data[ctx.dataIndex]<=0?'#5a9a5a':'#c0392b',
         },
       },
-      scales: { y:{grid:{color:'#f0e8d8'},ticks:{callback:v=>'₹'+v+' Cr'}}, x:{grid:{display:false}} },
+      scales:{ y:{grid:{color:'#f0e8d8'},ticks:{callback:v=>'₹'+v+' Cr'}}, x:{grid:{display:false}} },
     },
   });
 
   applyRole(localStorage.getItem('kpi-role') || 'mgmt');
 }
 
-function insightCard(label, value, sub, colorClass='') {
+function ic(label, value, sub, colorClass='') {
   return `<div class="insight-card"><div class="ins-label">${label}</div><div class="ins-value ${colorClass}">${value}</div><div class="ins-sub">${sub}</div></div>`;
 }
 

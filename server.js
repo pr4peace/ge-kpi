@@ -4,8 +4,9 @@ require('dotenv').config();
 const express = require('express');
 const fetch   = require('node-fetch');
 const path    = require('path');
-const { parseFinancialSheet }              = require('./src/parseSheet');
+const { parseFinancialSheet }                  = require('./src/parseSheet');
 const { parseTownhouses, parseInfrastructure } = require('./src/parseScheduleSheet');
+const { parseMaterialSheet }                   = require('./src/parseMaterialSheet');
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
@@ -62,7 +63,7 @@ app.get('/api/data', async (req, res) => {
     ]);
 
     const data = parseFinancialSheet(financialRows);
-    data.materialsRaw = materialRows;
+    data.materials = materialRows ? parseMaterialSheet(materialRows) : [];
 
     // Construction schedule — optional; only fetched if SCHEDULE_SPREADSHEET_ID is set
     if (SCHEDULE_SPREADSHEET_ID) {
