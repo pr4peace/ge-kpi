@@ -642,16 +642,17 @@ function renderInternalProjects(projects, scheduleData, materials, container) {
   html.push(ic('Current Projection', `₹${fmt(portCurrent)} Cr`, 'across all projects'));
   html.push(ic('Spent to Date', `₹${fmt(portSpent)} Cr`, `${Math.round((portSpent/portCurrent)*100)}% of projection`));
   html.push(ic('Still to Spend', `₹${fmt(portCurrent - portSpent)} Cr`, 'uncommitted balance'));
-  html.push(ic('On Track', `${underBudget} / 5`, 'projects under budget (Saarang TBD)', underBudget === projects.length ? 'green' : 'amber'));
-  if (ochre) html.push(ic('Ochre Progress', `${Math.round(ochre.townhouses.summary.avgCompletion * 100)}%`, `${ochre.townhouses.summary.totalPlots} units · avg construction`));
+  html.push(ic('On Track', `${underBudget} / 5`, 'projects under budget', underBudget >= 4 ? 'green' : underBudget >= 3 ? 'amber' : 'negative'));
   html.push(ic('Portfolio Impact', `${fmtC(portSavings)} Cr`, portSavings <= 0 ? 'vs sanctioned · saving' : 'vs sanctioned · overrun', portSavings <= 0 ? 'green' : 'negative'));
   html.push(ic('Avg Utilization', `${Math.round((portSpent/portCurrent)*100)}%`, 'spent vs current projection'));
   const savingsPct = portBudget ? Math.abs(Math.round((portSavings/portBudget)*100)) : 0;
   html.push(ic('Savings Rate', `${savingsPct}%`, portSavings <= 0 ? 'of sanctioned saved' : 'of sanctioned over', portSavings <= 0 ? 'green' : 'negative'));
-  if (ochre) {
-    const unitsDone = ochre.townhouses.plots.filter(pl => pl.overallPct >= 1).length;
-    html.push(ic('Units Complete', `${unitsDone} / ${ochre.townhouses.summary.totalPlots}`, 'Ochre townhouses at 100%', unitsDone > 0 ? 'green' : ''));
-  }
+  const overBudget = projects.length - underBudget;
+  html.push(ic('At Risk', `${overBudget} / 5`, overBudget === 0 ? 'no projects over budget' : 'projects over budget', overBudget === 0 ? 'green' : 'negative'));
+  const totalMatPending = materials.reduce((s, m) => s + (m.totalToBeSpentCr || 0), 0);
+  html.push(ic('Material Pending', totalMatPending > 0 ? `₹${totalMatPending.toFixed(1)} Cr` : '—', 'uncommitted procurement spend'));
+  const avgBudget = portBudget / 5;
+  html.push(ic('Avg Project Size', `₹${fmt(avgBudget)} Cr`, 'avg sanctioned budget / project'));
   html.push(`</div></div></details>`);
 
   const ochreAvg = ochre ? `${Math.round(ochre.townhouses.summary.avgCompletion * 100)}% avg construction` : '';
