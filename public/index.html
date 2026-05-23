@@ -456,25 +456,31 @@ function renderInitiatives() {
   initTabs(container);
 }
 
+const LEGAL_STATUS_COLORS = { 'Clear':'#5a9a5a', 'Encumbered':'#d48a20', 'In Dispute':'#c0392b', 'Title Search':'#b89040', 'Agreement':'#d4a84b', 'Registration':'#5a9a5a', 'Placeholder':'#d4c4a0' };
 const ACQ_HOLDINGS = [
-  { parcel: '—', location: '—', area: '—', status: 'Placeholder', notes: 'Update in KPI sheet' },
+  { parcel: '—', location: '—', area: '—', legalStatus: 'Placeholder', holdingStatus: 'Placeholder', notes: 'Update in KPI sheet' },
 ];
 const ACQ_PIPELINE = [
-  { parcel: '—', location: '—', area: '—', stage: 'identified', price: '—', notes: 'Update in KPI sheet' },
+  { parcel: '—', location: '—', area: '—', stage: 'identified', legalStatus: 'Placeholder', price: '—', notes: 'Update in KPI sheet' },
 ];
+
+function legalBadge(status) {
+  const color = LEGAL_STATUS_COLORS[status] || '#d4c4a0';
+  return `<span style="display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;background:${color}20;color:${color};border:1px solid ${color}40">${status}</span>`;
+}
 
 function renderAcquisitions() {
   const container = document.getElementById('acquisitions-content');
   if (!container) return;
   const holdingsHtml = `
     <table class="acq-table">
-      <thead><tr><th>Parcel</th><th>Location</th><th>Area</th><th>Status</th><th>Notes</th></tr></thead>
-      <tbody>${ACQ_HOLDINGS.map(r=>`<tr><td>${r.parcel}</td><td>${r.location}</td><td>${r.area}</td><td>${r.status}</td><td style="color:#b8a888">${r.notes}</td></tr>`).join('')}</tbody>
+      <thead><tr><th>Parcel</th><th>Location</th><th>Area</th><th>Legal Status</th><th>Holding Status</th><th>Notes</th></tr></thead>
+      <tbody>${ACQ_HOLDINGS.map(r=>`<tr><td>${r.parcel}</td><td>${r.location}</td><td>${r.area}</td><td>${legalBadge(r.legalStatus)}</td><td>${r.holdingStatus}</td><td style="color:#b8a888">${r.notes}</td></tr>`).join('')}</tbody>
     </table>`;
   const pipelineHtml = `
     <table class="acq-table">
-      <thead><tr><th>Parcel</th><th>Location</th><th>Area</th><th>Stage</th><th>Target Price</th><th>Notes</th></tr></thead>
-      <tbody>${ACQ_PIPELINE.map(r=>`<tr><td>${r.parcel}</td><td>${r.location}</td><td>${r.area}</td><td><span class="acq-stage ${r.stage}">${r.stage.charAt(0).toUpperCase()+r.stage.slice(1).replace('-',' ')}</span></td><td>${r.price}</td><td style="color:#b8a888">${r.notes}</td></tr>`).join('')}</tbody>
+      <thead><tr><th>Parcel</th><th>Location</th><th>Area</th><th>Stage</th><th>Legal Status</th><th>Target Price</th><th>Notes</th></tr></thead>
+      <tbody>${ACQ_PIPELINE.map(r=>`<tr><td>${r.parcel}</td><td>${r.location}</td><td>${r.area}</td><td><span class="acq-stage ${r.stage}">${r.stage.charAt(0).toUpperCase()+r.stage.slice(1).replace('-',' ')}</span></td><td>${legalBadge(r.legalStatus)}</td><td>${r.price}</td><td style="color:#b8a888">${r.notes}</td></tr>`).join('')}</tbody>
     </table>`;
   container.innerHTML = `
     <div class="tab-nav">
