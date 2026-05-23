@@ -883,10 +883,9 @@ function renderInternalProjects(projects, scheduleData, materials, container) {
         { bg:'#5a9a5a',label:'100%' },{ bg:'#7ab87a',label:'≥75%' },{ bg:'#d4a84b',label:'≥50%' },
         { bg:'#e8c070',label:'≥25%' },{ bg:'#f5dfa0',label:'>0%' },{ bg:'#f0e8d8',label:'0%' },{ bg:'#e8e4dc',label:'N/A' },
       ];
+      const unitsDone = ochre.townhouses.plots.filter(pl => pl.overallPct >= 1).length;
+      const avgPct = Math.round(ochre.townhouses.summary.avgCompletion * 100);
       html.push(`
-        const unitsDone = ochre.townhouses.plots.filter(pl => pl.overallPct >= 1).length;
-        const avgPct = Math.round(ochre.townhouses.summary.avgCompletion * 100);
-        html.push(`
         <details class="data-section">
           <summary><span class="ds-title">Unit Heat Map</span><span class="ds-peek">${unitsDone} complete · ${ochre.townhouses.summary.totalPlots - unitsDone} in progress · ${avgPct}% avg</span><span class="ds-caret"></span></summary>
           <div class="data-section-body">
