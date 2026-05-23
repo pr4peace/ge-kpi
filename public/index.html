@@ -739,16 +739,30 @@ function renderInternalProjects(projects, scheduleData, materials, container) {
       </details>`);
 
     if (isOchre && ochre) {
+      const phases = ['foundation','groundFloor','firstFloor','secondFloor','finishing'];
+      const phaseNames = { foundation:'Foundation', groundFloor:'Ground Floor', firstFloor:'First Floor', secondFloor:'Second Floor', finishing:'Finishing' };
+      const legendItems = [
+        { bg:'#5a9a5a',label:'100%' },{ bg:'#7ab87a',label:'≥75%' },{ bg:'#d4a84b',label:'≥50%' },
+        { bg:'#e8c070',label:'≥25%' },{ bg:'#f5dfa0',label:'>0%' },{ bg:'#f0e8d8',label:'0%' },{ bg:'#e8e4dc',label:'N/A' },
+      ];
       html.push(`
         <details class="data-section" data-min-role="pm">
           <summary>Unit Heat Map</summary>
           <div class="data-section-body">
+            <div class="heatmap-legend">${legendItems.map(l=>`<div class="heatmap-legend-item"><span class="heatmap-legend-swatch" style="background:${l.bg}"></span>${l.label}</div>`).join('')}</div>
             <div class="heatmap-wrap">
               <table class="heatmap-table">
-                <thead><tr><th>Unit</th><th>Overall %</th></tr></thead>
+                <thead><tr><th>Unit</th>${phases.map(k=>`<th>${phaseNames[k]}</th>`).join('')}<th>Overall</th></tr></thead>
                 <tbody>
-                  ${ochre.townhouses.plots.slice(0, 10).map(plot => `<tr><td>${plot.plot}</td><td>${Math.round(plot.overallPct * 100)}%</td></tr>`).join('')}
-                  <tr><td colspan="2" style="text-align:center;color:#b8a888;padding:10px">... see raw data for full list</td></tr>
+                  ${ochre.townhouses.plots.map(plot => {
+                    const cells = phases.map(key => {
+                      const ph = plot.phases[key], na = ph.pct === null;
+                      const c = phaseColor(ph.pct ?? 0, na);
+                      return `<td style="background:${c.bg};color:${c.text}">${na ? 'N/A' : Math.round(ph.pct*100)+'%'}</td>`;
+                    }).join('');
+                    const oc = phaseColor(plot.overallPct, false);
+                    return `<tr><td>${plot.plot}</td>${cells}<td style="background:${oc.bg};color:${oc.text};font-size:11px">${Math.round(plot.overallPct*100)}%</td></tr>`;
+                  }).join('')}
                 </tbody>
               </table>
             </div>
