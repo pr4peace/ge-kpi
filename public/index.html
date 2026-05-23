@@ -450,6 +450,9 @@ const ACQ_HOLDINGS = [
 const ACQ_PIPELINE = [
   { parcel: '—', location: '—', area: '—', stage: 'identified', legalStatus: 'Placeholder', price: '—', notes: 'Update in KPI sheet' },
 ];
+const ACQ_LEGAL = [
+  { matter: '—', property: '—', type: 'Placeholder', court: '—', status: 'Placeholder', nextDate: '—', counsel: '—', notes: 'Update in KPI sheet' },
+];
 
 function legalBadge(status) {
   const color = LEGAL_STATUS_COLORS[status] || '#d4c4a0';
@@ -469,10 +472,22 @@ function renderAcquisitions() {
       <thead><tr><th>Parcel</th><th>Location</th><th>Area</th><th>Stage</th><th>Legal Status</th><th>Target Price</th><th>Notes</th></tr></thead>
       <tbody>${ACQ_PIPELINE.map(r=>`<tr><td>${r.parcel}</td><td>${r.location}</td><td>${r.area}</td><td><span class="acq-stage ${r.stage}">${r.stage.charAt(0).toUpperCase()+r.stage.slice(1).replace('-',' ')}</span></td><td>${legalBadge(r.legalStatus)}</td><td>${r.price}</td><td style="color:#b8a888">${r.notes}</td></tr>`).join('')}</tbody>
     </table>`;
+  const legalStatusColors = { 'Active':'#c0392b', 'Settled':'#5a9a5a', 'Appeal':'#d48a20', 'Stayed':'#b89040', 'Placeholder':'#d4c4a0' };
+  const legalHtml = `
+    <table class="acq-table">
+      <thead><tr><th>Matter</th><th>Property</th><th>Type</th><th>Court / Forum</th><th>Status</th><th>Next Date</th><th>Counsel</th><th>Notes</th></tr></thead>
+      <tbody>${ACQ_LEGAL.map(r => {
+        const sc = legalStatusColors[r.status] || '#d4c4a0';
+        const badge = `<span style="display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;background:${sc}20;color:${sc};border:1px solid ${sc}40">${r.status}</span>`;
+        return `<tr><td>${r.matter}</td><td>${r.property}</td><td style="color:#b8a888">${r.type}</td><td style="color:#b8a888">${r.court}</td><td>${badge}</td><td style="color:#b8a888">${r.nextDate}</td><td style="color:#b8a888">${r.counsel}</td><td style="color:#b8a888;font-size:11px">${r.notes}</td></tr>`;
+      }).join('')}</tbody>
+    </table>`;
+
   container.innerHTML = `
     <div class="tab-nav">
       <button class="tab-btn active" data-tab="holdings">Holdings</button>
       <button class="tab-btn" data-tab="pipeline">New Development</button>
+      <button class="tab-btn" data-tab="legal-concerns">Legal Concerns</button>
     </div>
     <div class="tab-pane active" id="tab-holdings">
       <p style="font-size:12px;color:#b8a888;margin-bottom:12px">Current land and asset holdings. Update the KPI sheet to populate.</p>
@@ -481,6 +496,10 @@ function renderAcquisitions() {
     <div class="tab-pane" id="tab-pipeline">
       <p style="font-size:12px;color:#b8a888;margin-bottom:12px">Pipeline acquisitions being evaluated. Update the KPI sheet to populate.</p>
       ${pipelineHtml}
+    </div>
+    <div class="tab-pane" id="tab-legal-concerns">
+      <p style="font-size:12px;color:#b8a888;margin-bottom:12px">Active legal matters across properties and acquisitions. Update the KPI sheet to populate.</p>
+      ${legalHtml}
     </div>`;
   initTabs(container);
 }
