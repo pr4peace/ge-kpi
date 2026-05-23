@@ -108,12 +108,14 @@
     /* Phase funnel */
     .phase-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
     .phase-row:last-child { margin-bottom: 0; }
-    .phase-label { width: 100px; font-size: 12px; color: #3a3028; flex-shrink: 0; }
-    .phase-track { flex: 1; height: 22px; background: #f0e8d8; border-radius: 3px; overflow: hidden; display: flex; }
+    .phase-label { width: 90px; font-size: 12px; color: #3a3028; flex-shrink: 0; }
+    .phase-track { flex: 1; min-width: 0; height: 22px; background: #f0e8d8; border-radius: 3px; overflow: hidden; display: flex; }
     .phase-done { background: #5a9a5a; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: #fff; overflow: hidden; white-space: nowrap; }
     .phase-wip  { background: #d4a84b; height: 100%; }
     .phase-nos  { background: #e8dcc8; height: 100%; }
-    .phase-counts { font-size: 11px; color: #b8a888; white-space: nowrap; flex-shrink: 0; width: 140px; text-align: right; }
+    .phase-counts { display: flex; gap: 8px; flex-shrink: 0; width: 150px; justify-content: flex-end; }
+    .phase-count-chip { display: flex; align-items: center; gap: 3px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+    .phase-count-chip .chip-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
 
     /* Infra */
     .infra-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; margin-top: 4px; }
@@ -292,8 +294,8 @@ function renderInternalProjects(projects, scheduleData, materials, container) {
   // ── 1. Insight strip (all roles) ─────────────────────────────────────────
   html.push(`<div class="insights-strip">`);
   html.push(ic('Sanctioned Budget', `₹${fmt(portBudget)} Cr`, 'original approved total'));
-  html.push(ic('Current Projection', `₹${fmt(portCurrent)} Cr`, portSavings <= 0 ? `₹${Math.abs(portSavings).toFixed(2)} Cr under budget` : `₹${portSavings.toFixed(2)} Cr over budget`, portSavings <= 0 ? 'green' : 'amber'));
-  html.push(ic('Spent to Date', `₹${fmt(portSpent)} Cr`, `${Math.round((portSpent/portCurrent)*100)}% of current projection`));
+  html.push(ic('Current Projection', `₹${fmt(portCurrent)} Cr`, 'across all projects'));
+  html.push(ic('Spent to Date', `₹${fmt(portSpent)} Cr`, `${Math.round((portSpent/portCurrent)*100)}% of projection`));
   html.push(ic('Still to Spend', `₹${fmt(portCurrent - portSpent)} Cr`, 'uncommitted balance'));
   html.push(ic('On Track', `${underBudget} / ${projects.length}`, 'projects under budget', underBudget === projects.length ? 'green' : 'amber'));
   if (ochre) html.push(ic('Ochre Progress', `${Math.round(ochre.townhouses.summary.avgCompletion * 100)}%`, `${ochre.townhouses.summary.totalPlots} units · avg construction`));
@@ -320,8 +322,7 @@ function renderInternalProjects(projects, scheduleData, materials, container) {
         <span class="rag-dot ${p.status}"></span>
         <div class="ps-info">
           <div class="ps-name">${p.name}</div>
-          <div class="ps-nums">₹${fmt(originalBudget)} Cr budget · ${utilPct}% spent</div>
-          <div class="ps-impact ${totalSavings <= 0 ? 'positive' : 'negative'}">${fmtC(totalSavings)} Cr vs budget</div>
+          <div class="ps-nums">₹${fmt(originalBudget)} Cr · ${utilPct}% spent · ₹${fmt(totalSpent)} Cr to date</div>
           ${phaseMini}
         </div>
       </div>`);
@@ -465,6 +466,11 @@ function renderInternalProjects(projects, scheduleData, materials, container) {
         const donePct = Math.round((s.done / s.total) * 100);
         const wipPct  = Math.round((s.inProgress / s.total) * 100);
         const nosPct  = Math.round((s.notStarted / s.total) * 100);
+        const chips = [
+          s.done       ? `<div class="phase-count-chip"><span class="chip-dot" style="background:#5a9a5a"></span>${s.done}</div>` : '',
+          s.inProgress ? `<div class="phase-count-chip"><span class="chip-dot" style="background:#d4a84b"></span>${s.inProgress}</div>` : '',
+          s.notStarted ? `<div class="phase-count-chip"><span class="chip-dot" style="background:#e8dcc8;border:1px solid #d4c4a0"></span>${s.notStarted}</div>` : '',
+        ].filter(Boolean).join('');
         html.push(`<div class="phase-row">
           <div class="phase-label">${s.label}</div>
           <div class="phase-track">
@@ -472,7 +478,7 @@ function renderInternalProjects(projects, scheduleData, materials, container) {
             <div class="phase-wip"  style="width:${wipPct}%"></div>
             <div class="phase-nos"  style="width:${nosPct}%"></div>
           </div>
-          <div class="phase-counts">${s.done} done · ${s.inProgress} in progress${s.notStarted ? ` · ${s.notStarted} not started` : ''}</div>
+          <div class="phase-counts">${chips}</div>
         </div>`);
       }
 
