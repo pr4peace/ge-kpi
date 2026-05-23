@@ -5,198 +5,161 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GoodEarth KPI Dashboard</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #faf8f3; color: #3a3028; font-family: -apple-system, 'Segoe UI', sans-serif; font-size: 15px; line-height: 1.6; }
 
-    body {
-      background: #faf8f3;
-      color: #3a3028;
-      font-family: -apple-system, 'Segoe UI', sans-serif;
-      font-size: 15px;
-      line-height: 1.6;
-    }
+    /* ── Header ─────────────────────────────────────────────── */
+    .site-header { background: #fff; border-bottom: 1px solid #e8dcc8; padding: 16px 40px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .site-header h1 { font-family: Georgia, serif; font-size: 20px; font-weight: normal; color: #8b6914; letter-spacing: 0.5px; white-space: nowrap; }
+    .site-header .updated { font-size: 12px; color: #b8a888; }
 
-    /* Header */
-    .site-header {
-      background: #fff;
-      border-bottom: 1px solid #e8dcc8;
-      padding: 20px 40px;
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
+    .role-select {
+      appearance: none; background: #faf8f3; border: 1px solid #e8dcc8; border-radius: 4px;
+      padding: 5px 28px 5px 10px; font-size: 12px; color: #8b6914; cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238b6914'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 8px center;
     }
-    .site-header h1 {
-      font-family: Georgia, 'Times New Roman', serif;
-      font-size: 22px;
-      font-weight: normal;
-      color: #8b6914;
-      letter-spacing: 0.5px;
-    }
-    .site-header .updated {
-      font-size: 12px;
-      color: #b8a888;
-    }
+    .role-select:focus { outline: none; border-color: #8b6914; }
+    .role-label { font-size: 11px; color: #b8a888; text-transform: uppercase; letter-spacing: 0.5px; }
 
-    /* Main layout */
-    main { max-width: 1100px; margin: 0 auto; padding: 40px 40px 80px; }
-
-    /* Section */
+    /* ── Layout ─────────────────────────────────────────────── */
+    main { max-width: 1140px; margin: 0 auto; padding: 40px 40px 80px; }
     .section { margin-bottom: 56px; }
-    .section-title {
-      font-family: Georgia, serif;
-      font-size: 18px;
-      font-weight: normal;
-      color: #8b6914;
-      border-bottom: 1px solid #e8dcc8;
-      padding-bottom: 10px;
-      margin-bottom: 24px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .section-title .badge {
-      font-size: 10px;
-      font-family: sans-serif;
-      background: #8b6914;
-      color: #fff;
-      padding: 2px 8px;
-      border-radius: 10px;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-    }
-    .section-title .badge.soon {
-      background: #d4c4a0;
-      color: #8b6914;
-    }
+    .section-title { font-family: Georgia, serif; font-size: 18px; font-weight: normal; color: #8b6914; border-bottom: 1px solid #e8dcc8; padding-bottom: 10px; margin-bottom: 24px; display: flex; align-items: center; gap: 10px; }
+    .badge { font-size: 10px; font-family: sans-serif; background: #8b6914; color: #fff; padding: 2px 8px; border-radius: 10px; letter-spacing: 0.5px; text-transform: uppercase; }
+    .badge.soon { background: #d4c4a0; color: #8b6914; }
 
-    /* Project cards grid */
-    .cards-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 16px;
-      margin-bottom: 32px;
-    }
-    .project-card {
-      background: #fff;
-      border: 1px solid #e8dcc8;
-      border-radius: 6px;
-      padding: 18px 20px;
-    }
-    .project-card .project-name {
-      font-size: 16px;
-      font-weight: 600;
-      color: #3a3028;
-      margin-bottom: 6px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .rag-dot {
-      width: 9px; height: 9px;
-      border-radius: 50%;
-      display: inline-block;
-      flex-shrink: 0;
-    }
+    /* ── Insight strip ───────────────────────────────────────── */
+    .insights-strip { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; margin-bottom: 20px; }
+    .insight-card { background: #fff; border: 1px solid #e8dcc8; border-radius: 6px; padding: 14px 18px; display: flex; flex-direction: column; gap: 4px; }
+    .ins-label { font-size: 11px; color: #b8a888; text-transform: uppercase; letter-spacing: 0.5px; }
+    .ins-value { font-size: 22px; font-weight: 700; color: #3a3028; }
+    .ins-value.green { color: #5a9a5a; }
+    .ins-value.amber { color: #d48a20; }
+    .ins-sub { font-size: 12px; color: #b8a888; }
+
+    /* ── Portfolio overview (donut + project status) ─────────── */
+    .portfolio-overview { display: grid; grid-template-columns: 220px 1fr; gap: 16px; margin-bottom: 28px; }
+    @media (max-width: 700px) { .portfolio-overview { grid-template-columns: 1fr; } }
+    .donut-wrap { background: #fff; border: 1px solid #e8dcc8; border-radius: 6px; padding: 18px; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .donut-wrap .chart-title { font-size: 11px; color: #8b6914; text-transform: uppercase; letter-spacing: 0.5px; align-self: flex-start; }
+
+    .project-status-grid { background: #fff; border: 1px solid #e8dcc8; border-radius: 6px; padding: 18px 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .project-status-item { display: flex; align-items: flex-start; gap: 10px; }
+    .project-status-item .ps-info { display: flex; flex-direction: column; gap: 2px; }
+    .project-status-item .ps-name { font-weight: 600; font-size: 14px; color: #3a3028; }
+    .project-status-item .ps-detail { font-size: 11px; color: #b8a888; }
+    .project-status-item .ps-savings { font-size: 12px; font-weight: 600; }
+
+    /* ── RAG dot ─────────────────────────────────────────────── */
+    .rag-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; flex-shrink: 0; margin-top: 4px; }
     .rag-dot.green  { background: #5a9a5a; }
     .rag-dot.amber  { background: #d48a20; }
     .rag-dot.red    { background: #c0392b; }
     .rag-dot.grey   { background: #ccc; }
-    .project-card .stat-label { font-size: 11px; color: #b8a888; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 10px; }
-    .project-card .stat-value { font-size: 20px; font-weight: 600; color: #3a3028; }
-    .project-card .stat-sub   { font-size: 12px; color: #b8a888; }
 
-    /* Progress bar */
-    .progress-wrap { margin: 20px 0 8px; }
+    /* ── Project financial cards ─────────────────────────────── */
+    .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; margin-bottom: 20px; }
+    .project-card { background: #fff; border: 1px solid #e8dcc8; border-radius: 6px; padding: 18px 20px; }
+    .project-card .project-name { font-size: 15px; font-weight: 600; color: #3a3028; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+
+    /* ── Progress bar ────────────────────────────────────────── */
+    .progress-wrap { margin: 8px 0; }
     .progress-label { display: flex; justify-content: space-between; font-size: 12px; color: #8b6914; margin-bottom: 4px; }
     .progress-bar { height: 6px; background: #f0e8d8; border-radius: 3px; }
-    .progress-bar-fill { height: 100%; border-radius: 3px; background: #8b6914; transition: width 0.5s ease; }
+    .progress-bar-fill { height: 100%; border-radius: 3px; background: #8b6914; }
+    .progress-bar-fill.near-full { background: #a0522d; }
 
-    /* Detail table */
-    .detail-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 16px; }
-    .detail-table th { text-align: left; font-weight: 600; color: #8b6914; padding: 6px 10px; border-bottom: 1px solid #e8dcc8; font-size: 11px; text-transform: uppercase; letter-spacing: 0.4px; }
-    .detail-table td { padding: 8px 10px; border-bottom: 1px solid #f5f0e8; }
-    .detail-table tr:last-child td { border-bottom: none; }
-    .positive { color: #5a9a5a; }
-    .negative { color: #c0392b; }
-
-    /* Chart container */
-    .chart-wrap { background: #fff; border: 1px solid #e8dcc8; border-radius: 6px; padding: 24px; margin-top: 24px; }
-    .chart-title { font-size: 13px; color: #8b6914; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 16px; }
-
-    /* Placeholder (greyed-out sections) */
-    .placeholder-card {
-      background: #f5f2eb;
-      border: 1px dashed #d4c4a0;
-      border-radius: 6px;
-      padding: 32px;
-      text-align: center;
-      color: #c4b48a;
-    }
-    .placeholder-card p { font-size: 14px; margin-top: 6px; }
-
-    /* Loading state */
-    .loading { text-align: center; padding: 40px; color: #b8a888; font-size: 14px; }
-    .error-msg { background: #fdf0f0; border: 1px solid #f0c8c8; border-radius: 6px; padding: 16px; color: #c0392b; font-size: 14px; }
-
-    /* Insights strip */
-    .insights-strip {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 12px;
-      margin-bottom: 32px;
-    }
-    .insight-card {
-      background: #fff;
-      border: 1px solid #e8dcc8;
-      border-radius: 6px;
-      padding: 14px 18px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    .insight-card .ins-label { font-size: 11px; color: #b8a888; text-transform: uppercase; letter-spacing: 0.5px; }
-    .insight-card .ins-value { font-size: 22px; font-weight: 700; color: #3a3028; }
-    .insight-card .ins-value.green { color: #5a9a5a; }
-    .insight-card .ins-value.amber { color: #d48a20; }
-    .insight-card .ins-sub { font-size: 12px; color: #b8a888; }
-
-    /* Charts row */
-    .charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
-    @media (max-width: 700px) { .charts-row { grid-template-columns: 1fr; } }
-
-    /* Spend bar per project */
+    /* ── Spend bars ──────────────────────────────────────────── */
     .spend-bars { background: #fff; border: 1px solid #e8dcc8; border-radius: 6px; padding: 20px 24px; margin-bottom: 16px; }
     .spend-bar-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
     .spend-bar-row:last-child { margin-bottom: 0; }
     .spend-bar-label { width: 68px; font-size: 13px; font-weight: 600; color: #3a3028; flex-shrink: 0; }
     .spend-bar-track { flex: 1; height: 22px; background: #f0e8d8; border-radius: 4px; overflow: hidden; position: relative; }
-    .spend-bar-fill { height: 100%; border-radius: 4px; background: #8b6914; transition: width 0.6s ease; }
-    .spend-bar-fill.near-full { background: #c0392b; }
-    .spend-bar-nums { font-size: 11px; color: #b8a888; white-space: nowrap; flex-shrink: 0; width: 120px; text-align: right; }
+    .spend-bar-fill { height: 100%; border-radius: 4px; background: #8b6914; }
+    .spend-bar-fill.near-full { background: #a0522d; }
+    .spend-bar-nums { font-size: 11px; color: #b8a888; white-space: nowrap; flex-shrink: 0; width: 130px; text-align: right; }
 
-    /* Raw data toggle */
+    /* ── Charts ──────────────────────────────────────────────── */
+    .chart-wrap { background: #fff; border: 1px solid #e8dcc8; border-radius: 6px; padding: 24px; margin-bottom: 16px; }
+    .chart-title { font-size: 11px; color: #8b6914; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 16px; }
+    .charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+    @media (max-width: 700px) { .charts-row { grid-template-columns: 1fr; } }
+
+    /* ── Construction heat map ───────────────────────────────── */
+    .heatmap-wrap { overflow-x: auto; margin-top: 4px; }
+    .heatmap-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+    .heatmap-table th { background: #f5f2eb; padding: 7px 10px; text-align: center; font-size: 10px; text-transform: uppercase; letter-spacing: 0.4px; color: #8b6914; font-weight: 600; white-space: nowrap; border-bottom: 1px solid #e8dcc8; }
+    .heatmap-table th:first-child { text-align: left; }
+    .heatmap-table td { padding: 4px 6px; text-align: center; font-weight: 600; font-size: 10px; border-bottom: 1px solid #f5f0e8; }
+    .heatmap-table td:first-child { text-align: left; font-size: 11px; font-weight: 600; color: #3a3028; padding-left: 10px; white-space: nowrap; }
+    .heatmap-table tr:last-child td { border-bottom: none; }
+
+    /* ── Infra progress ──────────────────────────────────────── */
+    .infra-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; margin-top: 4px; }
+    .infra-item { background: #f5f2eb; border-radius: 4px; padding: 8px 10px; }
+    .infra-item-name { font-size: 10px; color: #8b6914; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 4px; }
+    .infra-item-bar { height: 5px; background: #e8dcc8; border-radius: 3px; margin-bottom: 3px; }
+    .infra-item-fill { height: 100%; border-radius: 3px; background: #8b6914; }
+    .infra-item-pct { font-size: 11px; font-weight: 700; color: #3a3028; }
+
+    /* ── Phase funnel ────────────────────────────────────────── */
+    .phase-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .phase-row:last-child { margin-bottom: 0; }
+    .phase-label { width: 100px; font-size: 12px; color: #3a3028; flex-shrink: 0; }
+    .phase-track { flex: 1; height: 18px; background: #f0e8d8; border-radius: 3px; overflow: hidden; display: flex; }
+    .phase-done { background: #5a9a5a; height: 100%; }
+    .phase-wip  { background: #d4a84b; height: 100%; }
+    .phase-nos  { background: #e8dcc8; height: 100%; }
+    .phase-counts { font-size: 11px; color: #b8a888; white-space: nowrap; flex-shrink: 0; width: 120px; text-align: right; }
+
+    /* ── Detail table ────────────────────────────────────────── */
+    .detail-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 16px; }
+    .detail-table th { text-align: left; font-weight: 600; color: #8b6914; padding: 6px 10px; border-bottom: 1px solid #e8dcc8; font-size: 11px; text-transform: uppercase; letter-spacing: 0.4px; }
+    .detail-table td { padding: 8px 10px; border-bottom: 1px solid #f5f0e8; }
+    .detail-table tr:last-child td { border-bottom: none; }
+
+    /* ── Colours ─────────────────────────────────────────────── */
+    .positive { color: #5a9a5a; }
+    .negative { color: #c0392b; }
+
+    /* ── Placeholder ─────────────────────────────────────────── */
+    .placeholder-card { background: #f5f2eb; border: 1px dashed #d4c4a0; border-radius: 6px; padding: 32px; text-align: center; color: #c4b48a; }
+    .placeholder-card p { font-size: 14px; margin-top: 6px; }
+    .loading  { text-align: center; padding: 40px; color: #b8a888; font-size: 14px; }
+    .error-msg { background: #fdf0f0; border: 1px solid #f0c8c8; border-radius: 6px; padding: 16px; color: #c0392b; font-size: 14px; }
+
+    /* ── Raw toggle ──────────────────────────────────────────── */
     .raw-toggle { margin-top: 20px; }
-    .raw-toggle summary {
-      cursor: pointer; list-style: none; display: inline-flex; align-items: center; gap: 6px;
-      font-size: 12px; color: #b8a888; border: 1px solid #e8dcc8; border-radius: 4px;
-      padding: 5px 12px; background: #fff; user-select: none;
-    }
-    .raw-toggle summary:hover { color: #8b6914; border-color: #8b6914; }
-    .raw-toggle[open] summary { color: #8b6914; border-color: #8b6914; }
+    .raw-toggle summary { cursor: pointer; list-style: none; display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #b8a888; border: 1px solid #e8dcc8; border-radius: 4px; padding: 5px 12px; background: #fff; user-select: none; }
+    .raw-toggle summary:hover, .raw-toggle[open] summary { color: #8b6914; border-color: #8b6914; }
+
+    /* ── Role-gating ─────────────────────────────────────────── */
+    [data-min-role] { transition: opacity 0.15s; }
   </style>
 </head>
 <body>
 
 <header class="site-header">
   <h1>GoodEarth &mdash; KPI Dashboard</h1>
-  <div style="display:flex;align-items:center;gap:16px">
+  <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+    <div style="display:flex;align-items:center;gap:6px">
+      <span class="role-label">View as</span>
+      <select class="role-select" id="role-select">
+        <option value="md">Managing Director</option>
+        <option value="mgmt" selected>Management</option>
+        <option value="gm">General Manager</option>
+        <option value="pm">Project Manager</option>
+      </select>
+    </div>
     <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_4f1jTZ3RY__MgbS2YrcGgxXYK-Q9UfM5IEqIy-Zsra6Lm4nKGBjfNPLqVnlZxREethc9lU86JIHS/pubhtml" target="_blank" rel="noopener" style="font-size:12px;color:#8b6914;text-decoration:none;border:1px solid #e8dcc8;border-radius:4px;padding:4px 10px;background:#fff;">↗ Source Sheet</a>
     <span class="updated" id="last-updated">Loading&hellip;</span>
   </div>
 </header>
 
 <main>
-  <!-- Internal Projects (live) -->
   <section class="section" id="section-internal">
     <h2 class="section-title">
       Internal Projects
@@ -207,36 +170,24 @@
     </div>
   </section>
 
-  <!-- External Projects (placeholder) -->
   <section class="section">
-    <h2 class="section-title">
-      External Projects
-      <span class="badge soon">Coming Soon</span>
-    </h2>
+    <h2 class="section-title">External Projects <span class="badge soon">Coming Soon</span></h2>
     <div class="placeholder-card">
       <strong>Restoration &amp; Client Interiors</strong>
       <p>Connect your external project data to see KPIs here.</p>
     </div>
   </section>
 
-  <!-- Initiators (placeholder) -->
   <section class="section">
-    <h2 class="section-title">
-      Initiators
-      <span class="badge soon">Coming Soon</span>
-    </h2>
+    <h2 class="section-title">Initiators <span class="badge soon">Coming Soon</span></h2>
     <div class="placeholder-card">
       <strong>Interiors &middot; Home Automation &middot; Furniture</strong>
       <p>Connect your initiator venture data to see KPIs here.</p>
     </div>
   </section>
 
-  <!-- Sales & Marketing (placeholder) -->
   <section class="section">
-    <h2 class="section-title">
-      Sales &amp; Marketing
-      <span class="badge soon">Coming Soon</span>
-    </h2>
+    <h2 class="section-title">Sales &amp; Marketing <span class="badge soon">Coming Soon</span></h2>
     <div class="placeholder-card">
       <strong>Pipeline &middot; Campaigns &middot; Push &amp; Pull</strong>
       <p>Connect your sales and marketing data to see KPIs here.</p>
@@ -247,6 +198,50 @@
 <script>
 'use strict';
 
+// ── Role system ───────────────────────────────────────────────────────────────
+const ROLE_LEVEL = { md: 1, mgmt: 2, gm: 3, pm: 4 };
+
+function applyRole(role) {
+  localStorage.setItem('kpi-role', role);
+  const level = ROLE_LEVEL[role] || 2;
+  document.querySelectorAll('[data-min-role]').forEach(el => {
+    const min = ROLE_LEVEL[el.dataset.minRole] || 1;
+    el.style.display = level >= min ? '' : 'none';
+  });
+  const sel = document.getElementById('role-select');
+  if (sel && sel.value !== role) sel.value = role;
+}
+
+document.getElementById('role-select').addEventListener('change', e => applyRole(e.target.value));
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+const fmt  = n => typeof n === 'number' ? n.toFixed(2) : String(n);
+const fmtC = n => typeof n === 'number' ? (n < 0 ? `−₹${Math.abs(n).toFixed(2)}` : `+₹${n.toFixed(2)}`) : '';
+const pct  = (spent, balance) => { const t = spent + balance; return t > 0 ? Math.round((spent / t) * 100) : 0; };
+
+function calcProject(p) {
+  const b     = p.financial.building || {};
+  const infra = p.financial.infra    || {};
+  const totalSpent   = (b.spent   || 0) + (infra.spent   || 0);
+  const totalBalance = (b.balance || 0) + (infra.balance || 0);
+  const totalBudget  = totalSpent + totalBalance;
+  const totalSavings = (b.impactCr || 0) + (infra.impactCr || 0);
+  const utilPct      = pct(totalSpent, totalBalance);
+  return { totalSpent, totalBalance, totalBudget, totalSavings, utilPct };
+}
+
+// ── Phase heat-map colour ─────────────────────────────────────────────────────
+function phaseColor(pct, na) {
+  if (na)       return { bg: '#e8e4dc', text: '#b8a888' };
+  if (pct >= 1) return { bg: '#5a9a5a', text: '#fff' };
+  if (pct >= 0.75) return { bg: '#7ab87a', text: '#fff' };
+  if (pct >= 0.5)  return { bg: '#d4a84b', text: '#fff' };
+  if (pct >= 0.25) return { bg: '#e8c070', text: '#3a3028' };
+  if (pct >  0)    return { bg: '#f5dfa0', text: '#3a3028' };
+  return { bg: '#f0e8d8', text: '#c8b898' };
+}
+
+// ── Main render ───────────────────────────────────────────────────────────────
 async function loadDashboard() {
   const container = document.getElementById('internal-content');
   try {
@@ -254,29 +249,13 @@ async function loadDashboard() {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
     document.getElementById('last-updated').textContent = `Last updated: ${data.lastUpdated}`;
-    renderInternalProjects(data.internalProjects, container);
+    renderInternalProjects(data.internalProjects, data.scheduleData, container);
   } catch (err) {
     container.innerHTML = `<div class="error-msg">Failed to load data: ${err.message}</div>`;
   }
 }
 
-const fmt  = n => typeof n === 'number' ? n.toFixed(2) : String(n);
-const fmtC = n => typeof n === 'number' ? (n < 0 ? `−₹${Math.abs(n).toFixed(2)}` : `+₹${n.toFixed(2)}`) : '';
-const pct  = (spent, balance) => { const t = spent + balance; return t > 0 ? Math.round((spent / t) * 100) : 0; };
-
-function calcProject(p) {
-  const b    = p.financial.building || {};
-  const infra = p.financial.infra   || {};
-  const totalSpent   = (b.spent   || 0) + (infra.spent   || 0);
-  const totalBalance = (b.balance || 0) + (infra.balance || 0);
-  const totalBudget  = totalSpent + totalBalance;
-  const totalSavings = (b.impactCr || 0) + (infra.impactCr || 0); // negative = saved
-  const utilPct      = pct(totalSpent, totalBalance);
-  return { totalSpent, totalBalance, totalBudget, totalSavings, utilPct };
-}
-
-function renderInternalProjects(projects, container) {
-  // ── Portfolio-level calculations ──────────────────────────────
+function renderInternalProjects(projects, scheduleData, container) {
   const calcs         = projects.map(calcProject);
   const portSpent     = calcs.reduce((s, c) => s + c.totalSpent,   0);
   const portBudget    = calcs.reduce((s, c) => s + c.totalBudget,  0);
@@ -284,74 +263,109 @@ function renderInternalProjects(projects, container) {
   const portRemaining = portBudget - portSpent;
   const underBudget   = projects.filter(p => p.status === 'green').length;
   const mostAdvanced  = projects[calcs.indexOf(calcs.reduce((a, b) => a.utilPct > b.utilPct ? a : b))];
-  const mostRemaining = projects[calcs.indexOf(calcs.reduce((a, b) => a.totalBalance > b.totalBalance ? a : b))];
 
   const html = [];
 
-  // ── 1. Portfolio insight cards ─────────────────────────────────
+  // ── 1. Portfolio insight strip (all roles) ────────────────────────────────
   html.push(`<div class="insights-strip">`);
-  html.push(insightCard('Portfolio Budget', `₹${fmt(portBudget)} Cr`, 'across all 4 projects'));
+  html.push(insightCard('Portfolio Budget', `₹${fmt(portBudget)} Cr`, 'across all projects'));
   html.push(insightCard('Total Spent', `₹${fmt(portSpent)} Cr`, `${Math.round((portSpent/portBudget)*100)}% utilised`));
   html.push(insightCard('Remaining', `₹${fmt(portRemaining)} Cr`, 'uncommitted budget'));
-  html.push(insightCard('Total Savings', `${portSavings <= 0 ? '−' : '+'}₹${Math.abs(portSavings).toFixed(2)} Cr`,
+  html.push(insightCard('Net Savings', `${portSavings <= 0 ? '−' : '+'}₹${Math.abs(portSavings).toFixed(2)} Cr`,
     portSavings <= 0 ? 'under budget — great' : 'cost overrun', portSavings <= 0 ? 'green' : 'amber'));
-  html.push(insightCard('Under Budget', `${underBudget} / ${projects.length}`, 'projects on track', underBudget === projects.length ? 'green' : 'amber'));
+  html.push(insightCard('On Track', `${underBudget} / ${projects.length}`, 'projects under budget', underBudget === projects.length ? 'green' : 'amber'));
   html.push(insightCard('Most Advanced', mostAdvanced.name, `${calcs[projects.indexOf(mostAdvanced)].utilPct}% budget used`));
   html.push(`</div>`);
 
-  // ── 2. Project health cards ────────────────────────────────────
-  html.push(`<div class="cards-grid">`);
+  // ── 2. Portfolio overview: donut + project status (all roles) ─────────────
+  html.push(`<div class="portfolio-overview">`);
+
+  // Donut
+  html.push(`
+    <div class="donut-wrap">
+      <div class="chart-title">Budget Split</div>
+      <canvas id="chart-donut" width="180" height="180"></canvas>
+    </div>
+  `);
+
+  // Project status cards
+  html.push(`<div class="project-status-grid">`);
   projects.forEach((p, i) => {
-    const { totalSpent, totalBalance, totalBudget, totalSavings, utilPct } = calcs[i];
-    const b    = p.financial.building || {};
-    const infra = p.financial.infra   || {};
-    const bSave  = b.impactCr    || 0;
-    const iSave  = infra.impactCr || 0;
+    const { totalSpent, totalBudget, totalSavings, utilPct } = calcs[i];
+    const savingClass = totalSavings <= 0 ? 'positive' : 'negative';
     html.push(`
-      <div class="project-card">
-        <div class="project-name"><span class="rag-dot ${p.status}"></span>${p.name}</div>
-
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin:12px 0 10px;">
-          <div style="background:#f5f2eb;border-radius:4px;padding:8px 10px;text-align:center">
-            <div style="font-size:10px;color:#b8a888;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px">Budget</div>
-            <div style="font-size:14px;font-weight:700;color:#3a3028">₹${fmt(totalBudget)}</div>
-            <div style="font-size:10px;color:#b8a888">Cr</div>
-          </div>
-          <div style="background:#e8f0e8;border-radius:4px;padding:8px 10px;text-align:center">
-            <div style="font-size:10px;color:#7aaa7a;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px">Spent</div>
-            <div style="font-size:14px;font-weight:700;color:#3a3028">₹${fmt(totalSpent)}</div>
-            <div style="font-size:10px;color:#7aaa7a">Cr</div>
-          </div>
-          <div style="background:#fdf6e8;border-radius:4px;padding:8px 10px;text-align:center">
-            <div style="font-size:10px;color:#c8901a;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px">To Spend</div>
-            <div style="font-size:14px;font-weight:700;color:#3a3028">₹${fmt(totalBalance)}</div>
-            <div style="font-size:10px;color:#c8901a">Cr</div>
-          </div>
-        </div>
-
-        <div class="progress-wrap" style="margin-top:4px">
-          <div class="progress-label"><span>Utilisation</span><span>${utilPct}%</span></div>
-          <div class="progress-bar"><div class="progress-bar-fill${utilPct >= 95 ? ' near-full' : ''}" style="width:${utilPct}%"></div></div>
-        </div>
-
-        <div style="margin-top:10px;display:flex;gap:8px;">
-          <div style="flex:1;background:#f5f2eb;border-radius:4px;padding:6px 10px;font-size:11px;">
-            <div style="color:#b8a888;text-transform:uppercase;letter-spacing:.4px;margin-bottom:2px">Bldg saving</div>
-            <div class="${bSave <= 0 ? 'positive' : 'negative'}" style="font-weight:700;font-size:13px">${fmtC(bSave)} Cr</div>
-          </div>
-          <div style="flex:1;background:#f5f2eb;border-radius:4px;padding:6px 10px;font-size:11px;">
-            <div style="color:#b8a888;text-transform:uppercase;letter-spacing:.4px;margin-bottom:2px">Infra saving</div>
-            <div class="${iSave <= 0 ? 'positive' : 'negative'}" style="font-weight:700;font-size:13px">${fmtC(iSave)} Cr</div>
-          </div>
+      <div class="project-status-item">
+        <span class="rag-dot ${p.status}"></span>
+        <div class="ps-info">
+          <div class="ps-name">${p.name}</div>
+          <div class="ps-detail">${utilPct}% utilised &middot; ₹${fmt(totalSpent)} / ₹${fmt(totalBudget)} Cr</div>
+          <div class="ps-savings ${savingClass}">${fmtC(totalSavings)} Cr net impact</div>
         </div>
       </div>
     `);
   });
-  html.push(`</div>`);
+  html.push(`</div></div>`); // end project-status-grid + portfolio-overview
 
-  // ── 3. Spend utilisation bars ──────────────────────────────────
+  // ── 3. Financial detail (mgmt+) ───────────────────────────────────────────
+  html.push(`<div data-min-role="mgmt">`);
+
+  // Project financial cards
+  html.push(`<div class="cards-grid">`);
+  projects.forEach((p, i) => {
+    const { totalSpent, totalBalance, totalBudget, totalSavings, utilPct } = calcs[i];
+    const b     = p.financial.building || {};
+    const infra = p.financial.infra    || {};
+    const bSave = b.impactCr    || 0;
+    const iSave = infra.impactCr || 0;
+    html.push(`
+      <div class="project-card">
+        <div class="project-name"><span class="rag-dot ${p.status}"></span>${p.name}</div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin:10px 0 8px">
+          <div style="background:#f5f2eb;border-radius:4px;padding:8px 6px;text-align:center">
+            <div style="font-size:9px;color:#b8a888;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px;white-space:nowrap">Budget</div>
+            <div style="font-size:14px;font-weight:700;color:#3a3028">₹${fmt(totalBudget)}</div>
+            <div style="font-size:9px;color:#b8a888">Cr</div>
+          </div>
+          <div style="background:#e8f0e8;border-radius:4px;padding:8px 6px;text-align:center">
+            <div style="font-size:9px;color:#7aaa7a;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px;white-space:nowrap">Spent</div>
+            <div style="font-size:14px;font-weight:700;color:#3a3028">₹${fmt(totalSpent)}</div>
+            <div style="font-size:9px;color:#7aaa7a">Cr</div>
+          </div>
+          <div style="background:#fdf6e8;border-radius:4px;padding:8px 6px;text-align:center">
+            <div style="font-size:9px;color:#c8901a;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px;white-space:nowrap">To Spend</div>
+            <div style="font-size:14px;font-weight:700;color:#3a3028">₹${fmt(totalBalance)}</div>
+            <div style="font-size:9px;color:#c8901a">Cr</div>
+          </div>
+        </div>
+
+        <div class="progress-wrap">
+          <div class="progress-label"><span>Utilisation</span><span>${utilPct}%</span></div>
+          <div class="progress-bar"><div class="progress-bar-fill${utilPct >= 95 ? ' near-full' : ''}" style="width:${utilPct}%"></div></div>
+        </div>
+
+        <div style="margin-top:8px;display:flex;gap:6px">
+          <div style="flex:1;background:#f5f2eb;border-radius:4px;padding:6px 8px;font-size:11px">
+            <div style="color:#b8a888;text-transform:uppercase;letter-spacing:.4px;margin-bottom:2px;font-size:9px">Bldg saving</div>
+            <div class="${bSave <= 0 ? 'positive' : 'negative'}" style="font-weight:700;font-size:12px">${fmtC(bSave)} Cr</div>
+          </div>
+          <div style="flex:1;background:#f5f2eb;border-radius:4px;padding:6px 8px;font-size:11px">
+            <div style="color:#b8a888;text-transform:uppercase;letter-spacing:.4px;margin-bottom:2px;font-size:9px">Infra saving</div>
+            <div class="${iSave <= 0 ? 'positive' : 'negative'}" style="font-weight:700;font-size:12px">${fmtC(iSave)} Cr</div>
+          </div>
+        </div>
+        <div style="margin-top:5px;background:${totalSavings <= 0 ? '#eef5ee' : '#fdf0f0'};border-radius:4px;padding:5px 8px;display:flex;justify-content:space-between;align-items:center">
+          <div style="font-size:9px;color:#b8a888;text-transform:uppercase;letter-spacing:.4px">Net impact</div>
+          <div class="${totalSavings <= 0 ? 'positive' : 'negative'}" style="font-weight:700;font-size:13px">${fmtC(totalSavings)} Cr</div>
+        </div>
+      </div>
+    `);
+  });
+  html.push(`</div>`); // end cards-grid
+
+  // Budget utilisation bars
   html.push(`
-    <div class="spend-bars chart-wrap" style="margin-bottom:16px">
+    <div class="spend-bars chart-wrap">
       <div class="chart-title">Budget Utilisation by Project</div>
   `);
   projects.forEach((p, i) => {
@@ -368,7 +382,11 @@ function renderInternalProjects(projects, container) {
   });
   html.push(`</div>`);
 
-  // ── 4. Charts row ──────────────────────────────────────────────
+  html.push(`</div>`); // end mgmt wrapper
+
+  // ── 4. Cost analysis (gm+) ────────────────────────────────────────────────
+  html.push(`<div data-min-role="gm">`);
+
   html.push(`
     <div class="charts-row">
       <div class="chart-wrap">
@@ -380,15 +398,103 @@ function renderInternalProjects(projects, container) {
         <canvas id="chart-infra" height="120"></canvas>
       </div>
     </div>
-    <div class="chart-wrap" style="margin-bottom:16px">
+    <div class="chart-wrap">
       <div class="chart-title">Savings / Overrun by Project (₹ Cr) — negative = saved</div>
       <canvas id="chart-savings" height="70"></canvas>
     </div>
   `);
 
-  // ── 5. Raw data (collapsed) ────────────────────────────────────
-  html.push(`<details class="raw-toggle"><summary>▸ Show raw data</summary>`);
-  for (const p of projects) {
+  // Construction section — only rendered when schedule data is available
+  const ochre = scheduleData && scheduleData.ochre;
+  if (ochre) {
+    const { townhouses, infrastructure } = ochre;
+
+    // Phase funnel
+    html.push(`
+      <div class="chart-wrap">
+        <div class="chart-title">Ochre — Construction Phase Progress (${townhouses.summary.totalPlots} units · ${Math.round(townhouses.summary.avgCompletion * 100)}% avg complete)</div>
+    `);
+    for (const [key, s] of Object.entries(townhouses.summary.phaseSummary)) {
+      if (!s.total) continue;
+      const donePct = Math.round((s.done / s.total) * 100);
+      const wipPct  = Math.round((s.inProgress / s.total) * 100);
+      const nosPct  = Math.round((s.notStarted / s.total) * 100);
+      html.push(`
+        <div class="phase-row">
+          <div class="phase-label">${s.label}</div>
+          <div class="phase-track">
+            <div class="phase-done" style="width:${donePct}%"></div>
+            <div class="phase-wip"  style="width:${wipPct}%"></div>
+            <div class="phase-nos"  style="width:${nosPct}%"></div>
+          </div>
+          <div class="phase-counts">${s.done} done · ${s.inProgress} in progress · ${s.notStarted} not started</div>
+        </div>
+      `);
+    }
+    html.push(`</div>`); // end phase funnel chart-wrap
+
+    // Infrastructure progress
+    html.push(`
+      <div class="chart-wrap">
+        <div class="chart-title">Ochre — Infrastructure Progress (${Math.round(infrastructure.avgProgress * 100)}% avg)</div>
+        <div class="infra-grid">
+    `);
+    infrastructure.items.forEach(item => {
+      const p = Math.round(item.progress * 100);
+      html.push(`
+        <div class="infra-item">
+          <div class="infra-item-name">${item.name}</div>
+          <div class="infra-item-bar"><div class="infra-item-fill" style="width:${p}%"></div></div>
+          <div class="infra-item-pct">${p}%</div>
+        </div>
+      `);
+    });
+    html.push(`</div></div>`);
+  }
+
+  html.push(`</div>`); // end gm wrapper
+
+  // ── 5. Unit-level detail (pm) ─────────────────────────────────────────────
+  html.push(`<div data-min-role="pm">`);
+
+  if (ochre) {
+    const { townhouses } = ochre;
+    const phases = ['foundation','groundFloor','firstFloor','secondFloor','finishing'];
+    const phaseNames = { foundation:'Foundation', groundFloor:'Ground Floor', firstFloor:'First Floor', secondFloor:'Second Floor', finishing:'Finishing' };
+
+    html.push(`
+      <div class="chart-wrap">
+        <div class="chart-title">Ochre — Unit-Level Construction Heat Map</div>
+        <div class="heatmap-wrap">
+          <table class="heatmap-table">
+            <thead>
+              <tr>
+                <th>Unit</th>
+                ${phases.map(k => `<th>${phaseNames[k]}</th>`).join('')}
+                <th>Overall</th>
+              </tr>
+            </thead>
+            <tbody>
+    `);
+    townhouses.plots.forEach(plot => {
+      html.push(`<tr><td>${plot.plot}</td>`);
+      phases.forEach(key => {
+        const ph  = plot.phases[key];
+        const na  = ph.pct === null;
+        const c   = phaseColor(ph.pct ?? 0, na);
+        const lbl = na ? 'N/A' : `${Math.round(ph.pct * 100)}%`;
+        html.push(`<td style="background:${c.bg};color:${c.text}">${lbl}</td>`);
+      });
+      const oc = phaseColor(plot.overallPct, false);
+      html.push(`<td style="background:${oc.bg};color:${oc.text}">${Math.round(plot.overallPct * 100)}%</td>`);
+      html.push(`</tr>`);
+    });
+    html.push(`</tbody></table></div></div>`);
+  }
+
+  // Raw financial data
+  html.push(`<details class="raw-toggle"><summary>▸ Show raw financial data</summary>`);
+  projects.forEach(p => {
     const b    = p.financial.building;
     const infra = p.financial.infra;
     html.push(`
@@ -416,32 +522,65 @@ function renderInternalProjects(projects, container) {
         </table>
       </div>
     `);
-  }
+  });
   html.push(`</details>`);
+
+  html.push(`</div>`); // end pm wrapper
 
   container.innerHTML = html.join('');
 
-  // ── Render charts ──────────────────────────────────────────────
-  const labels    = projects.map(p => p.name);
-  const chartOpts = (yLabel) => ({
-    responsive: true,
-    plugins: { legend: { position: 'top', labels: { boxWidth: 12, font: { size: 11 } } } },
-    scales: {
-      y: { grid: { color: '#f0e8d8' }, ticks: { callback: v => '₹' + v } },
-      x: { grid: { display: false } },
+  // ── Charts ────────────────────────────────────────────────────────────────
+  const labels = projects.map(p => p.name);
+
+  // Portfolio donut
+  new Chart(document.getElementById('chart-donut'), {
+    type: 'doughnut',
+    data: {
+      labels,
+      datasets: [{
+        data: calcs.map(c => c.totalBudget),
+        backgroundColor: ['#8b6914', '#b89040', '#d4b86a', '#e8d4a0'],
+        borderWidth: 2,
+        borderColor: '#fff',
+      }],
+    },
+    options: {
+      responsive: false,
+      cutout: '62%',
+      plugins: {
+        legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 }, padding: 8 } },
+        datalabels: {
+          formatter: (v, ctx) => {
+            const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
+            return Math.round(v / total * 100) + '%';
+          },
+          color: '#fff',
+          font: { size: 10, weight: '700' },
+        },
+      },
     },
   });
+
+  const barDatalabels = {
+    anchor: 'end', align: 'end', offset: 2,
+    formatter: v => v > 0 ? '₹' + Math.round(v) : '',
+    font: { size: 9, weight: '600' }, color: '#8b6914',
+  };
+  const barScales = {
+    y: { beginAtZero: false, grid: { color: '#f0e8d8' }, ticks: { callback: v => '₹'+v } },
+    x: { grid: { display: false } },
+  };
 
   new Chart(document.getElementById('chart-building'), {
     type: 'bar',
     data: {
       labels,
       datasets: [
-        { label: 'Budget /sft', data: projects.map(p => p.financial.building?.budgetPerSft || 0), backgroundColor: '#d4c4a0', borderRadius: 4 },
+        { label: 'Budget /sft',    data: projects.map(p => p.financial.building?.budgetPerSft || 0),    backgroundColor: '#d4c4a0', borderRadius: 4 },
         { label: 'Projected /sft', data: projects.map(p => p.financial.building?.projectedPerSft || 0), backgroundColor: '#8b6914', borderRadius: 4 },
       ],
     },
-    options: { ...chartOpts(), scales: { y: { beginAtZero: false, grid: { color: '#f0e8d8' }, ticks: { callback: v => '₹'+v } }, x: { grid: { display: false } } } },
+    options: { responsive: true, layout: { padding: { top: 20 } }, plugins: { legend: { position: 'top', labels: { boxWidth: 12, font: { size: 11 } } }, datalabels: barDatalabels }, scales: barScales },
   });
 
   new Chart(document.getElementById('chart-infra'), {
@@ -449,14 +588,13 @@ function renderInternalProjects(projects, container) {
     data: {
       labels,
       datasets: [
-        { label: 'Budget /sft', data: projects.map(p => p.financial.infra?.budgetPerSft || 0), backgroundColor: '#d4c4a0', borderRadius: 4 },
+        { label: 'Budget /sft',    data: projects.map(p => p.financial.infra?.budgetPerSft || 0),    backgroundColor: '#d4c4a0', borderRadius: 4 },
         { label: 'Projected /sft', data: projects.map(p => p.financial.infra?.projectedPerSft || 0), backgroundColor: '#8b6914', borderRadius: 4 },
       ],
     },
-    options: { ...chartOpts(), scales: { y: { beginAtZero: false, grid: { color: '#f0e8d8' }, ticks: { callback: v => '₹'+v } }, x: { grid: { display: false } } } },
+    options: { responsive: true, layout: { padding: { top: 20 } }, plugins: { legend: { position: 'top', labels: { boxWidth: 12, font: { size: 11 } } }, datalabels: barDatalabels }, scales: barScales },
   });
 
-  // Savings chart — green for savings, red for overruns
   const savingsData = projects.map(p => +((p.financial.building?.impactCr || 0) + (p.financial.infra?.impactCr || 0)).toFixed(2));
   new Chart(document.getElementById('chart-savings'), {
     type: 'bar',
@@ -471,13 +609,28 @@ function renderInternalProjects(projects, container) {
     },
     options: {
       responsive: true,
-      plugins: { legend: { display: false } },
+      layout: { padding: { top: 20 } },
+      plugins: {
+        legend: { display: false },
+        datalabels: {
+          anchor: ctx => ctx.dataset.data[ctx.dataIndex] <= 0 ? 'start' : 'end',
+          align:  ctx => ctx.dataset.data[ctx.dataIndex] <= 0 ? 'start' : 'end',
+          offset: 4,
+          formatter: v => (v <= 0 ? '−' : '+') + '₹' + Math.abs(v).toFixed(2) + ' Cr',
+          font: { size: 11, weight: '700' },
+          color: ctx => ctx.dataset.data[ctx.dataIndex] <= 0 ? '#5a9a5a' : '#c0392b',
+        },
+      },
       scales: {
         y: { grid: { color: '#f0e8d8' }, ticks: { callback: v => '₹'+v+' Cr' } },
         x: { grid: { display: false } },
       },
     },
   });
+
+  // Apply saved role after DOM is ready
+  const savedRole = localStorage.getItem('kpi-role') || 'mgmt';
+  applyRole(savedRole);
 }
 
 function insightCard(label, value, sub, colorClass = '') {
@@ -490,6 +643,5 @@ function insightCard(label, value, sub, colorClass = '') {
 
 loadDashboard();
 </script>
-
 </body>
 </html>
