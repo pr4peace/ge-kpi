@@ -30,6 +30,7 @@
     .ins-value { font-size: 22px; font-weight: 700; color: #3a3028; line-height: 1.2; }
     .ins-value.green { color: #5a9a5a; }
     .ins-value.amber { color: #d48a20; }
+    .ins-value.negative { color: #c0392b; }
     .ins-sub { font-size: 11px; color: #b8a888; margin-top: 2px; }
 
     /* Portfolio overview */
@@ -617,6 +618,7 @@ function renderInternalProjects(projects, scheduleData, materials, container) {
   html.push(ic('Still to Spend', `₹${fmt(portCurrent - portSpent)} Cr`, 'uncommitted balance'));
   html.push(ic('On Track', `${underBudget} / ${projects.length}`, 'projects under budget', underBudget === projects.length ? 'green' : 'amber'));
   if (ochre) html.push(ic('Ochre Progress', `${Math.round(ochre.townhouses.summary.avgCompletion * 100)}%`, `${ochre.townhouses.summary.totalPlots} units · avg construction`));
+  html.push(ic('Portfolio Impact', `${fmtC(portSavings)} Cr`, portSavings <= 0 ? 'vs sanctioned · saving' : 'vs sanctioned · overrun', portSavings <= 0 ? 'green' : 'negative'));
   html.push(`</div></div></details>`);
 
   html.push(`<details class="sub-section" open><summary>Budget Charts</summary>`);
