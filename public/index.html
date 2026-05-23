@@ -162,6 +162,35 @@
     .sm-card-metrics li { font-size: 11px; color: #b8a888; padding: 3px 0; border-bottom: 1px solid #f5f0e8; display: flex; align-items: center; gap: 6px; }
     .sm-card-metrics li:last-child { border-bottom: none; }
     .sm-card-metrics li::before { content: '—'; color: #d4c4a0; }
+
+    /* New Dashboard UI Elements */
+    .tab-nav { display:flex; gap:4px; border-bottom:2px solid #e8dcc8; margin-bottom:20px; flex-wrap:wrap; }
+    .tab-btn { border:none; border-bottom:2px solid transparent; margin-bottom:-2px; padding:8px 16px; font-size:13px; font-weight:600; color:#b8a888; cursor:pointer; background:none; border-radius:4px 4px 0 0; }
+    .tab-btn:hover { color:#8b6914; }
+    .tab-btn.active { color:#8b6914; border-bottom-color:#8b6914; }
+    .tab-pane { display:none; }
+    .tab-pane.active { display:block; }
+    .health-badge { width:28px; height:28px; border-radius:50%; cursor:help; flex-shrink:0; }
+    .health-badge.green { background:#5a9a5a; }
+    .health-badge.amber { background:#d48a20; }
+    .health-badge.red { background:#c0392b; }
+    .data-section { border:1px solid #e8dcc8; border-radius:6px; margin-bottom:8px; overflow:hidden; background:#fff; }
+    .data-section > summary { padding:12px 16px; cursor:pointer; font-size:13px; font-weight:600; color:#8b6914; list-style:none; display:flex; align-items:center; justify-content:space-between; user-select:none; }
+    .data-section > summary::-webkit-details-marker { display:none; }
+    .data-section > summary::after { content:'▸'; font-size:10px; color:#b8a888; }
+    .data-section[open] > summary::after { content:'▾'; }
+    .data-section-body { padding:4px 16px 16px; }
+    .photo-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:8px; }
+    .photo-placeholder { background:#f5f2eb; border:1px dashed #d4c4a0; border-radius:4px; aspect-ratio:4/3; display:flex; align-items:center; justify-content:center; font-size:10px; color:#c4b48a; text-align:center; padding: 10px; }
+    .health-cards-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:14px; margin-top:16px; }
+    .health-card { background:#fff; border:1px solid #e8dcc8; border-radius:6px; padding:16px 18px; }
+    .health-card-top { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+    .health-card-name { font-weight:600; font-size:14px; }
+    .health-card-client { font-size:11px; color:#b8a888; }
+    .health-metrics { display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; }
+    .health-metric { text-align:center; background:#faf8f3; border-radius:4px; padding:6px 4px; }
+    .health-metric-val { font-size:14px; font-weight:700; color:#3a3028; }
+    .health-metric-label { font-size:9px; color:#b8a888; text-transform:uppercase; letter-spacing:.4px; }
   </style>
 </head>
 <body>
@@ -191,12 +220,17 @@
 
   <section class="section">
     <h2 class="section-title">External Projects <span class="badge soon">Coming Soon</span></h2>
-    <div class="placeholder-card"><strong>Restoration &amp; Client Interiors</strong><p>Connect your external project data to see KPIs here.</p></div>
+    <div id="external-projects-content"><div class="loading">Loading tabs&hellip;</div></div>
   </section>
 
   <section class="section">
-    <h2 class="section-title">Initiators <span class="badge soon">Coming Soon</span></h2>
-    <div class="placeholder-card"><strong>Interiors &middot; Home Automation &middot; Furniture</strong><p>Connect your initiator venture data to see KPIs here.</p></div>
+    <h2 class="section-title">Initiatives <span class="badge soon">Coming Soon</span></h2>
+    <div id="initiatives-content"><div class="loading">Loading tabs&hellip;</div></div>
+  </section>
+
+  <section class="section">
+    <h2 class="section-title">Acquisitions <span class="badge soon">Coming Soon</span></h2>
+    <div id="acquisitions-content"><div class="loading">Loading tabs&hellip;</div></div>
   </section>
 
   <section class="section">
@@ -260,7 +294,51 @@ function phaseColor(p, na) {
 function phaseSegColor(p) {
   return p >= 0.9 ? '#5a9a5a' : p >= 0.5 ? '#d4a84b' : p > 0 ? '#e8c070' : '#f0e8d8';
 }
-function matColor(p) { return p >= 100 ? '#5a9a5a' : p >= 60 ? '#d4a84b' : '#a0522d'; }
+function matColor(p) { return p >= 70 ? '#5a9a5a' : p >= 40 ? '#d4a84b' : '#c0392b'; }
+
+function initTabs(wrapper) {
+  wrapper.querySelectorAll('.tab-nav').forEach(nav => {
+    nav.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.tab;
+        nav.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b === btn));
+        const panes = nav.parentElement.querySelectorAll('.tab-pane');
+        panes.forEach(p => p.classList.toggle('active', p.id === 'tab-' + id));
+      });
+    });
+  });
+}
+
+function renderPlaceholderTabs(containerId, tabs) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  const html = [];
+  html.push(`<div class="tab-nav">`);
+  tabs.forEach((t, i) => {
+    html.push(`<button class="tab-btn ${i === 0 ? 'active' : ''}" data-tab="${t.id}">${t.name}</button>`);
+  });
+  html.push(`</div>`);
+  tabs.forEach((t, i) => {
+    html.push(`
+      <div class="tab-pane ${i === 0 ? 'active' : ''}" id="tab-${t.id}">
+        <div class="health-card" style="width:100%; max-width:none">
+          <div class="health-card-name">${t.name}</div>
+          <div class="health-card-client">${t.client || 'Client TBD'}</div>
+          <p style="font-size:13px; color:#b8a888; margin-top:8px">${t.msg || 'Live data coming soon'}</p>
+        </div>
+        <div class="photo-grid" style="margin-top:16px">
+          ${Array(6).fill(0).map(() => `<div class="photo-placeholder">Photo coming soon</div>`).join('')}
+        </div>
+      </div>
+    `);
+  });
+  container.innerHTML = html.join('');
+  initTabs(container);
+}
+
+function ic(label, value, sub, colorClass='') {
+  return `<div class="insight-card"><div class="ins-label">${label}</div><div class="ins-value ${colorClass}">${value}</div><div class="ins-sub">${sub}</div></div>`;
+}
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 async function loadDashboard() {
@@ -270,7 +348,34 @@ async function loadDashboard() {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
     document.getElementById('last-updated').textContent = `Last updated: ${data.lastUpdated}`;
+    
     renderInternalProjects(data.internalProjects, data.scheduleData, data.materials || [], container);
+    
+    renderPlaceholderTabs('external-projects-content', [
+      { id: 'siruseri', name: 'Siruseri' },
+      { id: 'ghatti', name: 'Ghatti' },
+      { id: 'manaali', name: 'Manaali' },
+      { id: 'tata-pune', name: 'Tata Pune', client: 'Tata Housing' },
+      { id: 'toyota-signage', name: 'Toyota Signage', client: 'Toyota' },
+      { id: 'kutgallu-lake', name: 'Kutgallu Lake' },
+      { id: 'hosur-mining', name: 'Hosur Mining Restoration' },
+      { id: 'aralam-farm', name: 'Aralam Farm' },
+      { id: 'kccpl', name: 'KCCPL', client: 'KCCPL' }
+    ]);
+    
+    renderPlaceholderTabs('initiatives-content', [
+      { id: 'petrichor', name: 'Petrichor' },
+      { id: 'confluence', name: 'Confluence' },
+      { id: 'studio-lore', name: 'Studio Lore' },
+      { id: 'noku', name: 'Noku' },
+      { id: 'terra', name: 'Terra' }
+    ]);
+    
+    renderPlaceholderTabs('acquisitions-content', [
+      { id: 'holdings', name: 'Holdings' },
+      { id: 'new-development', name: 'New Development' }
+    ]);
+    
   } catch (err) {
     container.innerHTML = `<div class="error-msg">Failed to load data: ${err.message}</div>`;
   }
@@ -279,19 +384,47 @@ async function loadDashboard() {
 function renderInternalProjects(projects, scheduleData, materials, container) {
   const calcs       = projects.map(calcProject);
   const portSpent   = calcs.reduce((s, c) => s + c.totalSpent,    0);
-  const portBudget  = calcs.reduce((s, c) => s + c.originalBudget,0); // original sanctioned
-  const portCurrent = calcs.reduce((s, c) => s + c.totalBudget,   0); // current projection
+  const portBudget  = calcs.reduce((s, c) => s + c.originalBudget,0); 
+  const portCurrent = calcs.reduce((s, c) => s + c.totalBudget,   0); 
   const portSavings = calcs.reduce((s, c) => s + c.totalSavings,  0);
   const underBudget = projects.filter(p => p.status === 'green').length;
   const ochre       = scheduleData && scheduleData.ochre;
 
-  // Material lookup by project name
   const matByProject = {};
   for (const m of materials) matByProject[m.name.toLowerCase()] = m;
 
-  const html = [];
+  const getHealth = (p, i) => {
+    const financial = p.status; 
+    let construction = 'green';
+    let materialStatus = 'green';
+    let cPct = 0;
+    let mPct = 0;
+    if (ochre && p.name.toLowerCase().includes('ochre')) {
+      cPct = ochre.townhouses.summary.avgCompletion * 100;
+      construction = cPct >= 80 ? 'green' : cPct >= 50 ? 'amber' : 'red';
+    }
+    const matData = matByProject[p.name.toLowerCase()];
+    if (matData && matData.materials.length) {
+      const avgProcured = matData.materials.reduce((sum, m) => sum + m.procuredPct, 0) / matData.materials.length;
+      mPct = avgProcured;
+      materialStatus = avgProcured >= 70 ? 'green' : avgProcured >= 40 ? 'amber' : 'red';
+    }
+    const levels = { green: 0, amber: 1, red: 2 };
+    const composite = [financial, construction, materialStatus].sort((a, b) => levels[b] - levels[a])[0];
+    return { composite, breakdown: `Financial: ${financial} | Construction: ${cPct.toFixed(0)}% | Materials: ${mPct.toFixed(0)}%`, cPct, mPct, financial };
+  };
 
-  // ── 1. Insight strip (all roles) ─────────────────────────────────────────
+  const html = [];
+  const tabs = ['Portfolio', ...projects.map(p => p.name), 'Saarang'];
+  
+  html.push(`<div class="tab-nav">`);
+  tabs.forEach((name, i) => {
+    html.push(`<button class="tab-btn ${i === 0 ? 'active' : ''}" data-tab="${name.toLowerCase().replace(/\s+/g, '-')}">${name}</button>`);
+  });
+  html.push(`</div>`);
+
+  // 1. Portfolio Tab
+  html.push(`<div class="tab-pane active" id="tab-portfolio">`);
   html.push(`<div class="insights-strip">`);
   html.push(ic('Sanctioned Budget', `₹${fmt(portBudget)} Cr`, 'original approved total'));
   html.push(ic('Current Projection', `₹${fmt(portCurrent)} Cr`, 'across all projects'));
@@ -301,267 +434,202 @@ function renderInternalProjects(projects, scheduleData, materials, container) {
   if (ochre) html.push(ic('Ochre Progress', `${Math.round(ochre.townhouses.summary.avgCompletion * 100)}%`, `${ochre.townhouses.summary.totalPlots} units · avg construction`));
   html.push(`</div>`);
 
-  // ── 2. Portfolio overview (all roles) ─────────────────────────────────────
-  html.push(`<div class="portfolio-overview">`);
-  html.push(`<div class="donut-wrap"><div class="chart-title" style="align-self:flex-start">Budget Split</div><canvas id="chart-donut" width="168" height="168"></canvas></div>`);
-
-  html.push(`<div class="project-status-grid">`);
-  projects.forEach((p, i) => {
-    const { totalSpent, totalBudget, originalBudget, totalSavings, utilPct } = calcs[i];
-    let phaseMini = '';
-    if (ochre && p.name.toLowerCase().includes('ochre')) {
-      const ps   = ochre.townhouses.summary.phaseSummary;
-      const segs = Object.values(ps).map(s => {
-        const approx = s.total ? (s.done + s.inProgress * 0.5) / s.total : 0;
-        return `<div class="ps-phase-seg" style="background:${phaseSegColor(approx)}" title="${s.label}: ${s.done} done, ${s.inProgress} in progress"></div>`;
-      }).join('');
-      phaseMini = `<div class="ps-phases">${segs}</div>`;
-    }
-    html.push(`
-      <div class="project-status-item">
-        <span class="rag-dot ${p.status}"></span>
-        <div class="ps-info">
-          <div class="ps-name">${p.name}</div>
-          <div class="ps-nums">₹${fmt(originalBudget)} Cr · ${utilPct}% spent · ₹${fmt(totalSpent)} Cr to date</div>
-          ${phaseMini}
-        </div>
-      </div>`);
-  });
-  html.push(`</div></div>`);
-
-  // ── 3. Project financial cards (mgmt+) ────────────────────────────────────
-  html.push(`<div data-min-role="mgmt">`);
-  html.push(`<div class="cards-grid">`);
-  projects.forEach((p, i) => {
-    const { totalSpent, totalBalance, totalBudget, totalSavings, originalBudget, utilPct } = calcs[i];
-
-    let phaseMiniCard = '';
-    if (ochre && p.name.toLowerCase().includes('ochre')) {
-      const ps = ochre.townhouses.summary.phaseSummary;
-      const segs = Object.values(ps).map(s => {
-        const approx = s.total ? (s.done + s.inProgress * 0.5) / s.total : 0;
-        return `<div class="phase-mini-seg" style="background:${phaseSegColor(approx)}" title="${s.label}"></div>`;
-      }).join('');
-      phaseMiniCard = `
-        <div style="margin-top:10px">
-          <div style="font-size:9px;color:#b8a888;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px">Construction phases</div>
-          <div class="phase-mini">${segs}</div>
-          <div class="phase-mini-labels"><span>Found</span><span>GF</span><span>FF</span><span>SF</span><span>Finish</span></div>
-        </div>`;
-    }
-
-    html.push(`
-      <div class="project-card">
-        <div class="project-card-name"><span class="rag-dot ${p.status}"></span>${p.name}</div>
-        <div class="budget-triple">
-          <div class="budget-cell" style="background:#f5f2eb">
-            <div class="bc-label" style="color:#b8a888">Budget</div>
-            <div class="bc-val">₹${fmt(originalBudget)}</div>
-            <div class="bc-sub" style="color:#b8a888">Cr sanctioned</div>
-          </div>
-          <div class="budget-cell" style="background:#e8f0e8">
-            <div class="bc-label" style="color:#7aaa7a">Spent</div>
-            <div class="bc-val">₹${fmt(totalSpent)}</div>
-            <div class="bc-sub" style="color:#7aaa7a">Cr to date</div>
-          </div>
-          <div class="budget-cell" style="background:#fdf6e8">
-            <div class="bc-label" style="color:#c8901a">To Spend</div>
-            <div class="bc-val">₹${fmt(totalBalance)}</div>
-            <div class="bc-sub" style="color:#c8901a">Cr remaining</div>
-          </div>
-        </div>
-        <div class="util-bar"><div class="util-fill${utilPct >= 95 ? ' near-full' : ''}" style="width:${utilPct}%"></div></div>
-        <div style="font-size:10px;color:#b8a888;margin-bottom:8px">${utilPct}% of current projection spent</div>
-        <div class="impact-row">
-          <span style="font-size:10px;color:#b8a888;text-transform:uppercase;letter-spacing:.4px">vs sanctioned budget</span>
-          <span class="${totalSavings <= 0 ? 'positive' : 'negative'}" style="font-weight:700;font-size:13px">${fmtC(totalSavings)} Cr</span>
-        </div>
-        ${phaseMiniCard}
-      </div>`);
-  });
-  html.push(`</div></div>`); // end cards-grid + mgmt
-
-  // ── 4. Cost analysis (gm+) ────────────────────────────────────────────────
-  html.push(`<div data-min-role="gm">`);
-
-  // Savings chart
   html.push(`<div class="charts-row">
     <div class="chart-wrap" style="margin-bottom:0">
       <div class="chart-title">Savings / Overrun vs Sanctioned Budget (₹ Cr)</div>
       <canvas id="chart-savings" height="140"></canvas>
     </div>
-    <div class="chart-wrap" style="margin-bottom:0">
-      <div class="chart-title">Cost Variance — Budget vs Projected /sft</div>
-      <table class="variance-table">`);
+    <div class="donut-wrap">
+      <div class="chart-title" style="align-self:flex-start">Budget Split</div>
+      <canvas id="chart-donut" width="168" height="168"></canvas>
+    </div>
+  </div>`);
 
-  // Variance table inline in chart-wrap
-  html.push(`<thead>
-    <tr>
-      <th rowspan="2">Project</th>
-      <th colspan="3" style="border-bottom:1px solid #e8dcc8">Building /sft</th>
-      <th colspan="3" style="border-bottom:1px solid #e8dcc8">Infra /sft</th>
-    </tr>
-    <tr><th>Budget</th><th>Projected</th><th>Var</th><th>Budget</th><th>Projected</th><th>Var</th></tr>
-    </thead><tbody>`);
-
-  projects.forEach(p => {
-    const b = p.financial.building || {}, inf = p.financial.infra || {};
-    const bVar = b.budgetPerSft   ? (b.projectedPerSft   - b.budgetPerSft)   / b.budgetPerSft   * 100 : 0;
-    const iVar = inf.budgetPerSft ? (inf.projectedPerSft - inf.budgetPerSft) / inf.budgetPerSft * 100 : 0;
-    html.push(`<tr>
-      <td>${p.name}</td>
-      <td>₹${Math.round(b.budgetPerSft||0)}</td><td>₹${Math.round(b.projectedPerSft||0)}</td><td class="${varClass(bVar)}">${varFmt(bVar)}</td>
-      <td>₹${Math.round(inf.budgetPerSft||0)}</td><td>₹${Math.round(inf.projectedPerSft||0)}</td><td class="${varClass(iVar)}">${varFmt(iVar)}</td>
-    </tr>`);
+  html.push(`<div class="health-cards-grid">`);
+  projects.forEach((p, i) => {
+    const health = getHealth(p, i);
+    const { originalBudget, totalSpent } = calcs[i];
+    html.push(`
+      <div class="health-card">
+        <div class="health-card-top">
+          <div class="health-badge ${health.composite}" title="${health.breakdown}"></div>
+          <div>
+            <div class="health-card-name">${p.name}</div>
+            <div class="health-card-client">Client TBD</div>
+          </div>
+        </div>
+        <div class="health-metrics">
+          <div class="health-metric"><div class="health-metric-val">₹${fmt(originalBudget)}</div><div class="health-metric-label">Sanctioned</div></div>
+          <div class="health-metric"><div class="health-metric-val">₹${fmt(totalSpent)}</div><div class="health-metric-label">Spent</div></div>
+          <div class="health-metric"><div class="health-metric-val">${health.cPct > 0 ? health.cPct.toFixed(0) + '%' : '—'}</div><div class="health-metric-label">Const %</div></div>
+        </div>
+      </div>`);
   });
-  html.push(`</tbody></table></div></div>`); // end variance table + chart-wrap + charts-row
+  html.push(`</div></div>`);
 
-  // Materials section
-  html.push(`<div class="chart-wrap">
-    <div class="chart-title">Material Procurement Status</div>
-    <div class="materials-grid">`);
+  // 2. Project Tabs
+  projects.forEach((p, i) => {
+    const { totalSpent, totalBalance, totalBudget, totalSavings, originalBudget, utilPct } = calcs[i];
+    const health = getHealth(p, i);
+    const isOchre = p.name.toLowerCase().includes('ochre');
+    const tabId = p.name.toLowerCase().replace(/\s+/g, '-');
+    
+    html.push(`<div class="tab-pane" id="tab-${tabId}">`);
+    let phaseMiniStrip = '';
+    if (ochre && isOchre) {
+      const ps = ochre.townhouses.summary.phaseSummary;
+      const segs = Object.values(ps).map(s => {
+        const approx = s.total ? (s.done + s.inProgress * 0.5) / s.total : 0;
+        return `<div class="phase-mini-seg" style="background:${phaseSegColor(approx)}" title="${s.label}"></div>`;
+      }).join('');
+      phaseMiniStrip = `<div style="margin-top:10px"><div class="phase-mini">${segs}</div><div class="phase-mini-labels"><span>Found</span><span>GF</span><span>FF</span><span>SF</span><span>Finish</span></div></div>`;
+    }
 
-  projects.forEach(p => {
+    html.push(`
+      <div class="health-card" style="margin-bottom:16px; width:100%; max-width:none;">
+        <div class="health-card-top">
+          <div class="health-badge ${health.composite}" title="${health.breakdown}"></div>
+          <div>
+            <div class="health-card-name">${p.name}</div>
+            <div class="health-card-client">Client TBD</div>
+          </div>
+        </div>
+        <div class="health-metrics" style="grid-template-columns: repeat(3, 1fr);">
+          <div class="health-metric"><div class="health-metric-val">₹${fmt(originalBudget)}</div><div class="health-metric-label">Sanctioned</div></div>
+          <div class="health-metric"><div class="health-metric-val">₹${fmt(totalSpent)}</div><div class="health-metric-label">Spent</div></div>
+          <div class="health-metric"><div class="health-metric-val">₹${fmt(totalBalance)}</div><div class="health-metric-label">To Spend</div></div>
+        </div>
+        ${phaseMiniStrip}
+      </div>`);
+
+    html.push(`
+      <details class="data-section" data-min-role="mgmt" open>
+        <summary>Financial Breakdown</summary>
+        <div class="data-section-body">
+          <div class="budget-triple">
+            <div class="budget-cell" style="background:#f5f2eb"><div class="bc-label">Sanctioned</div><div class="bc-val">₹${fmt(originalBudget)}</div><div class="bc-sub">Cr</div></div>
+            <div class="budget-cell" style="background:#e8f0e8"><div class="bc-label">Spent</div><div class="bc-val">₹${fmt(totalSpent)}</div><div class="bc-sub">Cr</div></div>
+            <div class="budget-cell" style="background:#fdf6e8"><div class="bc-label">To Spend</div><div class="bc-val">₹${fmt(totalBalance)}</div><div class="bc-sub">Cr</div></div>
+          </div>
+          <div class="util-bar"><div class="util-fill${utilPct >= 95 ? ' near-full' : ''}" style="width:${utilPct}%"></div></div>
+          <div style="font-size:11px;color:#b8a888;margin-bottom:12px">${utilPct}% of current projection utilized</div>
+          <div class="impact-row"><span>Impact vs Sanctioned</span><span class="${totalSavings <= 0 ? 'positive' : 'negative'}" style="font-weight:700">${fmtC(totalSavings)} Cr</span></div>
+          <table class="variance-table" style="margin-top:16px">
+            <thead><tr><th>Category</th><th>Budget/sft</th><th>Proj/sft</th><th>Var</th></tr></thead>
+            <tbody>
+              ${['building', 'infra'].map(key => {
+                const b = p.financial[key];
+                if (!b) return '';
+                const v = b.budgetPerSft ? (b.projectedPerSft - b.budgetPerSft) / b.budgetPerSft * 100 : 0;
+                return `<tr><td>${key.charAt(0).toUpperCase() + key.slice(1)}</td><td>₹${Math.round(b.budgetPerSft)}</td><td>₹${Math.round(b.projectedPerSft)}</td><td class="${varClass(v)}">${varFmt(v)}</td></tr>`;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+      </details>`);
+
     const matData = matByProject[p.name.toLowerCase()];
-    if (matData && matData.materials.length) {
-      html.push(`<div class="material-project-card">
-        <div class="material-project-name">${p.name}</div>`);
-      matData.materials.forEach(m => {
-        const col = matColor(m.procuredPct);
-        html.push(`<div class="material-row">
-          <div class="material-top">
-            <span class="material-name">${m.name}</span>
-            <span class="material-pct">${m.procuredPct}% procured</span>
+    html.push(`
+      <details class="data-section" data-min-role="gm">
+        <summary>Materials</summary>
+        <div class="data-section-body">
+          ${matData && matData.materials.length ? matData.materials.map(m => `
+            <div class="material-row">
+              <div class="material-top"><span class="material-name">${m.name}</span><span class="material-pct">${m.procuredPct}% procured</span></div>
+              <div class="material-bar"><div class="material-fill" style="width:${m.procuredPct}%;background:${matColor(m.procuredPct)}"></div></div>
+            </div>`).join('') : '<div class="coming-soon-card">Procurement data coming soon</div>'}
+        </div>
+      </details>`);
+
+    html.push(`
+      <details class="data-section" data-min-role="gm">
+        <summary>Construction</summary>
+        <div class="data-section-body">
+          ${isOchre && ochre ? `
+            <div class="phase-funnel">
+              ${Object.values(ochre.townhouses.summary.phaseSummary).filter(s => s.total).map(s => {
+                const donePct = Math.round((s.done / s.total) * 100);
+                return `
+                  <div class="phase-row">
+                    <div class="phase-label">${s.label}</div>
+                    <div class="phase-track">
+                      <div class="phase-done" style="width:${donePct}%">${donePct}%</div>
+                      <div class="phase-wip" style="width:${Math.round((s.inProgress / s.total) * 100)}%"></div>
+                    </div>
+                  </div>`;
+              }).join('')}
+            </div>
+            <div class="infra-grid" style="margin-top:16px">
+              ${ochre.infrastructure.items.map(item => `
+                <div class="infra-item">
+                  <div class="infra-item-name">${item.name}</div>
+                  <div class="infra-item-bar"><div class="infra-item-fill" style="width:${item.progress * 100}%;background:#8b6914"></div></div>
+                  <div class="infra-item-pct">${Math.round(item.progress * 100)}%</div>
+                </div>`).join('')}
+            </div>` : '<div class="coming-soon-card">Construction tracking coming soon</div>'}
+        </div>
+      </details>`);
+
+    if (isOchre && ochre) {
+      html.push(`
+        <details class="data-section" data-min-role="pm">
+          <summary>Unit Heat Map</summary>
+          <div class="data-section-body">
+            <div class="heatmap-wrap">
+              <table class="heatmap-table">
+                <thead><tr><th>Unit</th><th>Overall %</th></tr></thead>
+                <tbody>
+                  ${ochre.townhouses.plots.slice(0, 10).map(plot => `<tr><td>${plot.plot}</td><td>${Math.round(plot.overallPct * 100)}%</td></tr>`).join('')}
+                  <tr><td colspan="2" style="text-align:center;color:#b8a888;padding:10px">... see raw data for full list</td></tr>
+                </tbody>
+              </table>
+            </div>
           </div>
-          <div class="material-bar"><div class="material-fill" style="width:${m.procuredPct}%;background:${col}"></div></div>
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <span class="material-detail">${m.procuredQty.toLocaleString()} / ${m.budgetQty.toLocaleString()} ${m.unit}</span>
-            ${m.toBeSpentCr > 0 ? `<span class="material-pending-cost">₹${m.toBeSpentCr.toFixed(2)} Cr pending</span>` : `<span style="font-size:10px;color:#5a9a5a">Fully ordered</span>`}
-          </div>
-        </div>`);
-      });
-      html.push(`<div class="material-total">
-        <span style="color:#b8a888;font-size:11px">Total pending spend</span>
-        <span style="font-weight:700;color:#d48a20">₹${matData.totalToBeSpentCr.toFixed(2)} Cr</span>
-      </div></div>`);
-    } else {
-      html.push(`<div class="coming-soon-card"><strong>${p.name}</strong>Material data not available yet</div>`);
+        </details>`);
     }
+
+    html.push(`
+      <details class="data-section">
+        <summary>Photo Updates</summary>
+        <div class="data-section-body">
+          <div class="photo-grid">${Array(6).fill(0).map(() => `<div class="photo-placeholder">Photo coming soon</div>`).join('')}</div>
+        </div>
+      </details>`);
+
+    html.push(`
+      <details class="data-section" data-min-role="pm">
+        <summary>Raw Data</summary>
+        <div class="data-section-body">
+          <table class="detail-table">
+            <thead><tr><th>Category</th><th>Spent</th><th>Balance</th></tr></thead>
+            <tbody>
+              ${['building', 'infra'].map(key => {
+                const b = p.financial[key];
+                if (!b) return '';
+                return `<tr><td>${key.charAt(0).toUpperCase() + key.slice(1)}</td><td>₹${fmt(b.spent)} Cr</td><td>₹${fmt(b.balance)} Cr</td></tr>`;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+      </details>`);
+    html.push(`</div>`); 
   });
-  html.push(`</div></div>`); // end materials-grid + chart-wrap
 
-  // Construction — Ochre full, others coming soon
-  html.push(`<div class="chart-wrap">
-    <div class="chart-title">Construction Progress</div>
-    <div class="materials-grid">`);
-
-  projects.forEach(p => {
-    if (ochre && p.name.toLowerCase().includes('ochre')) {
-      const { townhouses } = ochre;
-      html.push(`<div class="material-project-card" style="grid-column:1/-1;max-width:none">
-        <div class="material-project-name">Ochre · ${townhouses.summary.totalPlots} units · ${Math.round(townhouses.summary.avgCompletion * 100)}% avg</div>`);
-
-      for (const s of Object.values(townhouses.summary.phaseSummary)) {
-        if (!s.total) continue;
-        const donePct = Math.round((s.done / s.total) * 100);
-        const wipPct  = Math.round((s.inProgress / s.total) * 100);
-        const nosPct  = Math.round((s.notStarted / s.total) * 100);
-        const chips = [
-          s.done       ? `<div class="phase-count-chip"><span class="chip-dot" style="background:#5a9a5a"></span>${s.done}</div>` : '',
-          s.inProgress ? `<div class="phase-count-chip"><span class="chip-dot" style="background:#d4a84b"></span>${s.inProgress}</div>` : '',
-          s.notStarted ? `<div class="phase-count-chip"><span class="chip-dot" style="background:#e8dcc8;border:1px solid #d4c4a0"></span>${s.notStarted}</div>` : '',
-        ].filter(Boolean).join('');
-        html.push(`<div class="phase-row">
-          <div class="phase-label">${s.label}</div>
-          <div class="phase-track">
-            <div class="phase-done" style="width:${donePct}%">${donePct >= 14 ? donePct+'%' : ''}</div>
-            <div class="phase-wip"  style="width:${wipPct}%"></div>
-            <div class="phase-nos"  style="width:${nosPct}%"></div>
-          </div>
-          <div class="phase-counts">${chips}</div>
-        </div>`);
-      }
-
-      html.push(`<div style="display:flex;gap:16px;margin-top:12px;flex-wrap:wrap">
-        <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:#8b6914"><span style="display:inline-block;width:14px;height:10px;background:#5a9a5a;border-radius:2px"></span>Complete</div>
-        <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:#8b6914"><span style="display:inline-block;width:14px;height:10px;background:#d4a84b;border-radius:2px"></span>In Progress</div>
-        <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:#8b6914"><span style="display:inline-block;width:14px;height:10px;background:#e8dcc8;border-radius:2px"></span>Not Started</div>
-      </div></div>`);
-
-      // Infra strip
-      html.push(`<div class="material-project-card" style="grid-column:1/-1">
-        <div class="material-project-name">Ochre — Infrastructure</div>
-        <div class="infra-grid">`);
-      ochre.infrastructure.items.forEach(item => {
-        const p = Math.round(item.progress * 100);
-        const col = p >= 100 ? '#5a9a5a' : p >= 50 ? '#d4a84b' : '#8b6914';
-        html.push(`<div class="infra-item">
-          <div class="infra-item-name">${item.name}</div>
-          <div class="infra-item-bar"><div class="infra-item-fill" style="width:${p}%;background:${col}"></div></div>
-          <div class="infra-item-pct">${p}%</div>
-        </div>`);
-      });
-      html.push(`</div></div>`);
-
-    } else {
-      html.push(`<div class="coming-soon-card"><strong>${p.name}</strong>Construction tracking — coming soon</div>`);
-    }
-  });
-  html.push(`</div></div>`); // end construction section + chart-wrap
-
-  html.push(`</div>`); // end gm
-
-  // ── 5. Unit heat map (pm) ─────────────────────────────────────────────────
-  html.push(`<div data-min-role="pm">`);
-  if (ochre) {
-    const { townhouses } = ochre;
-    const phases = ['foundation','groundFloor','firstFloor','secondFloor','finishing'];
-    const phaseNames = { foundation:'Foundation', groundFloor:'Ground Floor', firstFloor:'First Floor', secondFloor:'Second Floor', finishing:'Finishing' };
-    const legendItems = [
-      { bg:'#5a9a5a',label:'100%' },{ bg:'#7ab87a',label:'≥75%' },{ bg:'#d4a84b',label:'≥50%' },
-      { bg:'#e8c070',label:'≥25%' },{ bg:'#f5dfa0',label:'>0%' },{ bg:'#f0e8d8',label:'0%' },{ bg:'#e8e4dc',label:'N/A' },
-    ];
-    html.push(`<div class="chart-wrap">
-      <div class="chart-title">Ochre — Unit Construction Heat Map</div>
-      <div class="heatmap-legend">${legendItems.map(l=>`<div class="heatmap-legend-item"><span class="heatmap-legend-swatch" style="background:${l.bg}"></span>${l.label}</div>`).join('')}</div>
-      <div class="heatmap-wrap">
-        <table class="heatmap-table">
-          <thead><tr><th>Unit</th>${phases.map(k=>`<th>${phaseNames[k]}</th>`).join('')}<th>Overall</th></tr></thead>
-          <tbody>`);
-    townhouses.plots.forEach(plot => {
-      html.push(`<tr><td>${plot.plot}</td>`);
-      phases.forEach(key => {
-        const ph = plot.phases[key], na = ph.pct === null;
-        const c  = phaseColor(ph.pct ?? 0, na);
-        html.push(`<td style="background:${c.bg};color:${c.text}">${na ? 'N/A' : Math.round(ph.pct*100)+'%'}</td>`);
-      });
-      const oc = phaseColor(plot.overallPct, false);
-      html.push(`<td style="background:${oc.bg};color:${oc.text};font-size:11px">${Math.round(plot.overallPct*100)}%</td></tr>`);
-    });
-    html.push(`</tbody></table></div></div>`);
-  }
-
-  // Raw data
-  html.push(`<details class="raw-toggle"><summary>▸ Show raw financial data</summary>`);
-  projects.forEach(p => {
-    const b = p.financial.building, inf = p.financial.infra;
-    html.push(`<div style="margin-top:16px">
-      <div style="font-weight:600;color:#8b6914;padding:8px 0;border-bottom:1px solid #e8dcc8;margin-bottom:4px">${p.name}</div>
-      <table class="detail-table">
-        <thead><tr><th>Category</th><th>Spent (Cr)</th><th>Balance (Cr)</th><th>Budget /sft</th><th>Projected /sft</th><th>Impact /sft</th><th>Impact (Cr)</th></tr></thead>
-        <tbody>
-          ${b?`<tr><td>Building</td><td>₹${fmt(b.spent)}</td><td>₹${fmt(b.balance)}</td><td>₹${fmt(b.budgetPerSft)}</td><td>₹${fmt(b.projectedPerSft)}</td><td class="${b.impactPerSft<=0?'positive':'negative'}">${b.impactPerSft>0?'+':''}${fmt(b.impactPerSft)}</td><td class="${b.impactCr<=0?'positive':'negative'}">${b.impactCr>0?'+':''}${fmt(b.impactCr)}</td></tr>`:''}
-          ${inf?`<tr><td>Infra</td><td>₹${fmt(inf.spent)}</td><td>₹${fmt(inf.balance)}</td><td>₹${fmt(inf.budgetPerSft)}</td><td>₹${fmt(inf.projectedPerSft)}</td><td class="${inf.impactPerSft<=0?'positive':'negative'}">${inf.impactPerSft>0?'+':''}${fmt(inf.impactPerSft)}</td><td class="${inf.impactCr<=0?'positive':'negative'}">${inf.impactCr>0?'+':''}${fmt(inf.impactCr)}</td></tr>`:''}
-        </tbody>
-      </table></div>`);
-  });
-  html.push(`</details></div>`);
+  // 3. Saarang Tab
+  html.push(`
+    <div class="tab-pane" id="tab-saarang">
+      <div class="health-card" style="width:100%; max-width:none; margin-bottom:16px">
+        <div class="health-card-name">Saarang</div>
+        <div class="health-card-client">Client TBD</div>
+        <p style="font-size:13px; color:#b8a888; margin-top:8px">Project data integration in progress.</p>
+      </div>
+      <div class="photo-grid">${Array(6).fill(0).map(() => `<div class="photo-placeholder">Photo coming soon</div>`).join('')}</div>
+    </div>`);
 
   container.innerHTML = html.join('');
 
   // ── Charts ────────────────────────────────────────────────────────────────
   const labels = projects.map(p => p.name);
-
   new Chart(document.getElementById('chart-donut'), {
     type: 'doughnut',
     data: { labels, datasets: [{ data: calcs.map(c=>c.originalBudget), backgroundColor:['#8b6914','#b89040','#d4b86a','#e8d4a0'], borderWidth:2, borderColor:'#fff' }] },
@@ -589,11 +657,8 @@ function renderInternalProjects(projects, scheduleData, materials, container) {
     },
   });
 
+  initTabs(container);
   applyRole(localStorage.getItem('kpi-role') || 'mgmt');
-}
-
-function ic(label, value, sub, colorClass='') {
-  return `<div class="insight-card"><div class="ins-label">${label}</div><div class="ins-value ${colorClass}">${value}</div><div class="ins-sub">${sub}</div></div>`;
 }
 
 loadDashboard();
