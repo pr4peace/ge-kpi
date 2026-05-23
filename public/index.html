@@ -191,6 +191,45 @@
     .health-metric { text-align:center; background:#faf8f3; border-radius:4px; padding:6px 4px; }
     .health-metric-val { font-size:14px; font-weight:700; color:#3a3028; }
     .health-metric-label { font-size:9px; color:#b8a888; text-transform:uppercase; letter-spacing:.4px; }
+
+    /* Initiative business cards */
+    .initiative-card { background:#fff; border:1px solid #e8dcc8; border-radius:6px; padding:20px; margin-bottom:16px; }
+    .initiative-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px; }
+    .initiative-name { font-size:16px; font-weight:600; color:#3a3028; }
+    .initiative-note { font-size:12px; color:#6a5a3a; background:#faf8f3; border-left:3px solid #d4a84b; padding:8px 12px; border-radius:0 4px 4px 0; margin-bottom:16px; font-style:italic; }
+    .initiative-kpi-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:10px; margin-bottom:16px; }
+    .initiative-kpi { background:#faf8f3; border-radius:4px; padding:10px 12px; }
+    .initiative-kpi-label { font-size:9px; color:#b8a888; text-transform:uppercase; letter-spacing:.4px; margin-bottom:4px; }
+    .initiative-kpi-val { font-size:15px; font-weight:700; color:#3a3028; }
+    .initiative-kpi-val.positive { color:#5a9a5a; }
+    .initiative-kpi-val.negative { color:#c0392b; }
+    .initiative-mktg { display:flex; gap:16px; flex-wrap:wrap; font-size:12px; color:#8b6914; border-top:1px solid #f0ece4; padding-top:12px; }
+    .initiative-mktg span { color:#b8a888; }
+
+    /* Acquisitions tables */
+    .acq-table { width:100%; border-collapse:collapse; font-size:12px; margin-top:8px; }
+    .acq-table th { background:#faf8f3; color:#8b6914; font-size:10px; text-transform:uppercase; letter-spacing:.4px; padding:8px 10px; text-align:left; border-bottom:2px solid #e8dcc8; }
+    .acq-table td { padding:8px 10px; border-bottom:1px solid #f5f0e8; color:#3a3028; vertical-align:top; }
+    .acq-table tr:last-child td { border-bottom:none; }
+    .acq-stage { display:inline-block; font-size:10px; font-weight:600; padding:2px 8px; border-radius:10px; background:#f0ece4; color:#8b6914; }
+    .acq-stage.identified { background:#f0ece4; color:#8b6914; }
+    .acq-stage.due-diligence { background:#fdf6e8; color:#d48a20; }
+    .acq-stage.negotiation { background:#fff3cd; color:#c07020; }
+    .acq-stage.signed { background:#e8f0e8; color:#5a9a5a; }
+
+    /* Compliance table */
+    .compliance-table { width:100%; border-collapse:collapse; font-size:12px; }
+    .compliance-table th { background:#faf8f3; color:#8b6914; font-size:10px; text-transform:uppercase; letter-spacing:.4px; padding:8px 10px; text-align:left; border-bottom:2px solid #e8dcc8; }
+    .compliance-table td { padding:9px 10px; border-bottom:1px solid #f5f0e8; color:#3a3028; vertical-align:middle; }
+    .compliance-table tr:last-child td { border-bottom:none; }
+    .compliance-table tbody tr:hover { background:#faf8f3; }
+    .compliance-group-header td { background:#f5f0e8; font-weight:600; color:#8b6914; font-size:11px; padding:6px 10px; letter-spacing:.3px; }
+    .rag { display:inline-block; width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+    .rag.green { background:#5a9a5a; }
+    .rag.amber { background:#d48a20; }
+    .rag.red { background:#c0392b; }
+    .rag.placeholder { background:#d4c4a0; }
+    .rag-label { display:flex; align-items:center; gap:6px; }
   </style>
 </head>
 <body>
@@ -231,6 +270,11 @@
   <section class="section">
     <h2 class="section-title">Acquisitions <span class="badge soon">Coming Soon</span></h2>
     <div id="acquisitions-content"><div class="loading">Loading tabs&hellip;</div></div>
+  </section>
+
+  <section class="section">
+    <h2 class="section-title">Compliance <span class="badge soon">Placeholder</span></h2>
+    <div id="compliance-content"></div>
   </section>
 
   <section class="section">
@@ -336,6 +380,139 @@ function renderPlaceholderTabs(containerId, tabs) {
   initTabs(container);
 }
 
+const INITIATIVES = [
+  { id: 'petrichor',    name: 'Petrichor' },
+  { id: 'confluence',  name: 'Confluence' },
+  { id: 'studio-lore', name: 'Studio Lore' },
+  { id: 'noku',        name: 'Noku' },
+  { id: 'terra',       name: 'Terra' },
+];
+
+function renderInitiatives() {
+  const container = document.getElementById('initiatives-content');
+  if (!container) return;
+  const html = [];
+  html.push(`<div class="tab-nav">`);
+  INITIATIVES.forEach((t, i) => html.push(`<button class="tab-btn ${i===0?'active':''}" data-tab="${t.id}">${t.name}</button>`));
+  html.push(`</div>`);
+  INITIATIVES.forEach((t, i) => {
+    html.push(`
+      <div class="tab-pane ${i===0?'active':''}" id="tab-${t.id}">
+        <div class="initiative-card">
+          <div class="initiative-header">
+            <div class="initiative-name">${t.name}</div>
+          </div>
+          <div class="initiative-note">Fortnightly update note will appear here once the coordinator fills in the KPI sheet.</div>
+          <div class="initiative-kpi-grid">
+            <div class="initiative-kpi"><div class="initiative-kpi-label">Revenue YTD</div><div class="initiative-kpi-val">—</div></div>
+            <div class="initiative-kpi"><div class="initiative-kpi-label">Expenses YTD</div><div class="initiative-kpi-val">—</div></div>
+            <div class="initiative-kpi"><div class="initiative-kpi-label">Net P&amp;L</div><div class="initiative-kpi-val">—</div></div>
+            <div class="initiative-kpi"><div class="initiative-kpi-label">Assets</div><div class="initiative-kpi-val">—</div></div>
+            <div class="initiative-kpi"><div class="initiative-kpi-label">Liabilities</div><div class="initiative-kpi-val">—</div></div>
+            <div class="initiative-kpi"><div class="initiative-kpi-label">Mktg Spend</div><div class="initiative-kpi-val">—</div></div>
+          </div>
+          <div class="initiative-mktg">
+            <div><span>Channels</span> —</div>
+            <div><span>Key Metric</span> —</div>
+          </div>
+        </div>
+        <details class="data-section" style="margin-top:12px">
+          <summary>Photo Updates</summary>
+          <div class="data-section-body">
+            <div class="photo-grid">${Array(6).fill(0).map(()=>`<div class="photo-placeholder">Photo coming soon</div>`).join('')}</div>
+          </div>
+        </details>
+      </div>`);
+  });
+  container.innerHTML = html.join('');
+  initTabs(container);
+}
+
+const ACQ_HOLDINGS = [
+  { parcel: '—', location: '—', area: '—', status: 'Placeholder', notes: 'Update in KPI sheet' },
+];
+const ACQ_PIPELINE = [
+  { parcel: '—', location: '—', area: '—', stage: 'identified', price: '—', notes: 'Update in KPI sheet' },
+];
+
+function renderAcquisitions() {
+  const container = document.getElementById('acquisitions-content');
+  if (!container) return;
+  const holdingsHtml = `
+    <table class="acq-table">
+      <thead><tr><th>Parcel</th><th>Location</th><th>Area</th><th>Status</th><th>Notes</th></tr></thead>
+      <tbody>${ACQ_HOLDINGS.map(r=>`<tr><td>${r.parcel}</td><td>${r.location}</td><td>${r.area}</td><td>${r.status}</td><td style="color:#b8a888">${r.notes}</td></tr>`).join('')}</tbody>
+    </table>`;
+  const pipelineHtml = `
+    <table class="acq-table">
+      <thead><tr><th>Parcel</th><th>Location</th><th>Area</th><th>Stage</th><th>Target Price</th><th>Notes</th></tr></thead>
+      <tbody>${ACQ_PIPELINE.map(r=>`<tr><td>${r.parcel}</td><td>${r.location}</td><td>${r.area}</td><td><span class="acq-stage ${r.stage}">${r.stage.charAt(0).toUpperCase()+r.stage.slice(1).replace('-',' ')}</span></td><td>${r.price}</td><td style="color:#b8a888">${r.notes}</td></tr>`).join('')}</tbody>
+    </table>`;
+  container.innerHTML = `
+    <div class="tab-nav">
+      <button class="tab-btn active" data-tab="holdings">Holdings</button>
+      <button class="tab-btn" data-tab="pipeline">New Development</button>
+    </div>
+    <div class="tab-pane active" id="tab-holdings">
+      <p style="font-size:12px;color:#b8a888;margin-bottom:12px">Current land and asset holdings. Update the KPI sheet to populate.</p>
+      ${holdingsHtml}
+    </div>
+    <div class="tab-pane" id="tab-pipeline">
+      <p style="font-size:12px;color:#b8a888;margin-bottom:12px">Pipeline acquisitions being evaluated. Update the KPI sheet to populate.</p>
+      ${pipelineHtml}
+    </div>`;
+  initTabs(container);
+}
+
+const COMPLIANCE_ITEMS = [
+  { group: 'Tax' },
+  { item: 'TDS on Contractors (194C)', project: 'All', freq: 'Monthly', due: '—', status: 'placeholder', notes: '' },
+  { item: 'TDS on Rent (194I)', project: 'All', freq: 'Monthly', due: '—', status: 'placeholder', notes: '' },
+  { item: 'TDS on Professional Fees (194J)', project: 'All', freq: 'Monthly', due: '—', status: 'placeholder', notes: '' },
+  { item: 'GST — GSTR-1', project: 'All', freq: 'Monthly', due: '—', status: 'placeholder', notes: '' },
+  { item: 'GST — GSTR-3B', project: 'All', freq: 'Monthly', due: '—', status: 'placeholder', notes: '' },
+  { item: 'Advance Tax', project: 'All', freq: 'Quarterly', due: '—', status: 'placeholder', notes: '' },
+  { group: 'RERA' },
+  { item: 'RERA Registration', project: 'Ochre', freq: 'Annual', due: '—', status: 'placeholder', notes: '' },
+  { item: 'RERA Quarterly Progress Report', project: 'Ochre', freq: 'Quarterly', due: '—', status: 'placeholder', notes: '' },
+  { group: 'Labour & Statutory' },
+  { item: 'PF / ESIC Filing', project: 'All Sites', freq: 'Monthly', due: '—', status: 'placeholder', notes: '' },
+  { item: 'Professional Tax', project: 'All', freq: 'Monthly', due: '—', status: 'placeholder', notes: '' },
+  { item: 'Labour License', project: 'Per Site', freq: 'Annual', due: '—', status: 'placeholder', notes: '' },
+  { group: 'Site Approvals' },
+  { item: 'Building Plan Approval', project: 'Ochre', freq: 'One-time', due: '—', status: 'placeholder', notes: '' },
+  { item: 'Environmental Clearance', project: 'Ochre', freq: 'One-time', due: '—', status: 'placeholder', notes: '' },
+  { item: 'Fire NOC', project: 'Per Site', freq: 'Annual', due: '—', status: 'placeholder', notes: '' },
+  { item: 'Occupancy Certificate', project: 'Ochre', freq: 'One-time', due: '—', status: 'placeholder', notes: '' },
+  { group: 'Insurance' },
+  { item: 'Contractor All Risk (CAR)', project: 'Per Site', freq: 'Annual', due: '—', status: 'placeholder', notes: '' },
+  { item: 'Public Liability', project: 'All Sites', freq: 'Annual', due: '—', status: 'placeholder', notes: '' },
+];
+
+function renderCompliance() {
+  const container = document.getElementById('compliance-content');
+  if (!container) return;
+  const rows = COMPLIANCE_ITEMS.map(r => {
+    if (r.group) return `<tr class="compliance-group-header"><td colspan="6">${r.group}</td></tr>`;
+    const ragClass = r.status === 'placeholder' ? 'placeholder' : r.status;
+    const ragText  = r.status === 'placeholder' ? 'Placeholder' : r.status.charAt(0).toUpperCase()+r.status.slice(1);
+    return `<tr>
+      <td>${r.item}</td>
+      <td>${r.project}</td>
+      <td>${r.freq}</td>
+      <td>${r.due}</td>
+      <td><div class="rag-label"><span class="rag ${ragClass}"></span>${ragText}</div></td>
+      <td style="color:#b8a888;font-size:11px">${r.notes || 'Update in KPI sheet'}</td>
+    </tr>`;
+  }).join('');
+  container.innerHTML = `
+    <p style="font-size:12px;color:#b8a888;margin-bottom:16px">Statutory and tax compliance tracker. Finance/Admin updates the KPI sheet fortnightly — statuses reflect live here.</p>
+    <table class="compliance-table">
+      <thead><tr><th>Item</th><th>Project</th><th>Frequency</th><th>Due Date</th><th>Status</th><th>Notes</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
 function ic(label, value, sub, colorClass='') {
   return `<div class="insight-card"><div class="ins-label">${label}</div><div class="ins-value ${colorClass}">${value}</div><div class="ins-sub">${sub}</div></div>`;
 }
@@ -363,18 +540,9 @@ async function loadDashboard() {
       { id: 'kccpl', name: 'KCCPL', client: 'KCCPL' }
     ]);
     
-    renderPlaceholderTabs('initiatives-content', [
-      { id: 'petrichor', name: 'Petrichor' },
-      { id: 'confluence', name: 'Confluence' },
-      { id: 'studio-lore', name: 'Studio Lore' },
-      { id: 'noku', name: 'Noku' },
-      { id: 'terra', name: 'Terra' }
-    ]);
-    
-    renderPlaceholderTabs('acquisitions-content', [
-      { id: 'holdings', name: 'Holdings' },
-      { id: 'new-development', name: 'New Development' }
-    ]);
+    renderInitiatives();
+    renderAcquisitions();
+    renderCompliance();
     
   } catch (err) {
     container.innerHTML = `<div class="error-msg">Failed to load data: ${err.message}</div>`;
