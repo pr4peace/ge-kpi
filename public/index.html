@@ -617,7 +617,7 @@ function renderInternalProjects(projects, scheduleData, materials, container) {
 
   const impactLabel = portSavings <= 0 ? `<span style="color:#5a9a5a;font-weight:700">${fmtC(portSavings)} Cr saved</span>` : `<span style="color:#c0392b;font-weight:700">${fmtC(portSavings)} Cr overrun</span>`;
   html.push(`<details class="sub-section" open>
-    <summary><span>Portfolio Summary</span><span class="sub-summary-peek">₹${fmt(portBudget)} Cr sanctioned &nbsp;·&nbsp; ${underBudget}/${projects.length} on track &nbsp;·&nbsp; ${impactLabel}</span></summary>`);
+    <summary><span>Portfolio Summary</span><span class="sub-summary-peek">₹${fmt(portBudget)} Cr sanctioned &nbsp;·&nbsp; ${underBudget}/5 on track &nbsp;·&nbsp; ${impactLabel}</span></summary>`);
   html.push(`<div style="padding:8px 14px 14px"><div class="insights-strip" style="margin-bottom:0">`);
   html.push(ic('Sanctioned Budget', `₹${fmt(portBudget)} Cr`, 'original approved total'));
   html.push(ic('Current Projection', `₹${fmt(portCurrent)} Cr`, 'across all projects'));
@@ -669,7 +669,7 @@ function renderInternalProjects(projects, scheduleData, materials, container) {
     return `<span class="rag ${h.composite}" title="${p.name}: ${h.breakdown}"></span>`;
   }).join(' ');
   html.push(`<details class="sub-section" open>
-    <summary><span>Project Health</span><span class="sub-summary-peek">${healthDots} &nbsp; ${underBudget}/${projects.length} on track</span></summary>`);
+    <summary><span>Project Health</span><span class="sub-summary-peek">${healthDots} &nbsp; ${underBudget}/5 on track</span></summary>`);
   html.push(`<div style="padding:8px 14px 14px"><div class="health-cards-grid" style="margin-top:0">`);
   projects.forEach((p, i) => {
     const health = getHealth(p, i);
