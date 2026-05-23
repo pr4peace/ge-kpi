@@ -287,12 +287,12 @@
 </header>
 
 <main>
-  <details class="section" id="section-internal" open>
+  <details class="section" id="section-internal">
     <summary class="section-toggle"><span class="section-caret">▾</span><h2 class="section-title">Internal Projects <span class="badge" id="internal-badge">Live</span></h2></summary>
     <div id="internal-content"><div class="loading">Fetching data&hellip;</div></div>
   </details>
 
-  <details class="section" open>
+  <details class="section">
     <summary class="section-toggle"><span class="section-caret">▾</span><h2 class="section-title">Sales &amp; Marketing <span class="badge soon">Coming Soon</span></h2></summary>
     <p style="font-size:12px;color:#b8a888;margin-bottom:20px">Connect your CRM and campaign data to activate these KPIs.</p>
     <div class="sm-grid">
@@ -305,22 +305,22 @@
     </div>
   </details>
 
-  <details class="section" open>
+  <details class="section">
     <summary class="section-toggle"><span class="section-caret">▾</span><h2 class="section-title">External Projects <span class="badge soon">Coming Soon</span></h2></summary>
     <div id="external-projects-content"><div class="loading">Loading tabs&hellip;</div></div>
   </details>
 
-  <details class="section" open>
+  <details class="section">
     <summary class="section-toggle"><span class="section-caret">▾</span><h2 class="section-title">Initiatives <span class="badge soon">Coming Soon</span></h2></summary>
     <div id="initiatives-content"><div class="loading">Loading tabs&hellip;</div></div>
   </details>
 
-  <details class="section" open>
+  <details class="section">
     <summary class="section-toggle"><span class="section-caret">▾</span><h2 class="section-title">Acquisitions <span class="badge soon">Coming Soon</span></h2></summary>
     <div id="acquisitions-content"><div class="loading">Loading tabs&hellip;</div></div>
   </details>
 
-  <details class="section" open>
+  <details class="section">
     <summary class="section-toggle"><span class="section-caret">▾</span><h2 class="section-title">Compliance <span class="badge soon">Placeholder</span></h2></summary>
     <div id="compliance-content"></div>
   </details>
@@ -644,7 +644,7 @@ function renderInternalProjects(projects, scheduleData, materials, container) {
   html.push(`<div class="tab-pane active" id="tab-portfolio">`);
 
   const impactLabel = portSavings <= 0 ? `<span style="color:#5a9a5a;font-weight:700">${fmtC(portSavings)} Cr saved</span>` : `<span style="color:#c0392b;font-weight:700">${fmtC(portSavings)} Cr overrun</span>`;
-  html.push(`<details class="sub-section" open>
+  html.push(`<details class="sub-section">
     <summary><span>Portfolio Summary</span><span class="sub-summary-peek">₹${fmt(portBudget)} Cr sanctioned &nbsp;·&nbsp; ${underBudget}/5 on track &nbsp;·&nbsp; ${impactLabel}</span></summary>`);
   html.push(`<div style="padding:8px 14px 14px"><div class="insights-strip" style="margin-bottom:0">`);
   html.push(ic('Sanctioned Budget', `₹${fmt(portBudget)} Cr`, 'original approved total'));
@@ -665,7 +665,7 @@ function renderInternalProjects(projects, scheduleData, materials, container) {
   html.push(`</div></div></details>`);
 
   const ochreAvg = ochre ? `${Math.round(ochre.townhouses.summary.avgCompletion * 100)}% avg construction` : '';
-  html.push(`<details class="sub-section" open>
+  html.push(`<details class="sub-section">
     <summary><span>Budget Overview</span><span class="sub-summary-peek">Spend utilisation &nbsp;·&nbsp; Impact vs sanctioned</span></summary>`);
   html.push(`<div style="padding:8px 14px 14px">`);
   html.push(`<div class="budget-overview-grid">`);
@@ -716,7 +716,7 @@ function renderInternalProjects(projects, scheduleData, materials, container) {
     const h = getHealth(p, i);
     return `<span class="rag ${h.composite}" title="${p.name}: ${h.breakdown}"></span>`;
   }).join(' ');
-  html.push(`<details class="sub-section" open>
+  html.push(`<details class="sub-section">
     <summary><span>Project Health</span><span class="sub-summary-peek">${healthDots} &nbsp; ${underBudget}/5 on track</span></summary>`);
   html.push(`<div style="padding:8px 14px 14px"><div class="health-cards-grid" style="margin-top:0">`);
   projects.forEach((p, i) => {
