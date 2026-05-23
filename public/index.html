@@ -193,6 +193,16 @@
     .health-metric-val { font-size:14px; font-weight:700; color:#3a3028; }
     .health-metric-label { font-size:9px; color:#b8a888; text-transform:uppercase; letter-spacing:.4px; }
 
+    /* Budget overview bars */
+    .budget-overview-grid { display:grid; grid-template-columns:1fr auto; gap:20px; align-items:start; }
+    .budget-bars-col { display:flex; flex-direction:column; gap:10px; }
+    .bov-row { display:grid; grid-template-columns:72px 1fr; gap:8px; align-items:center; }
+    .bov-name { font-size:12px; font-weight:600; color:#3a3028; }
+    .bov-track { height:8px; background:#f0ece4; border-radius:4px; overflow:hidden; }
+    .bov-fill { height:100%; border-radius:4px; transition:width .4s; }
+    .bov-nums { grid-column:2; display:flex; justify-content:space-between; font-size:10px; color:#b8a888; margin-top:1px; }
+    .bov-donut-col { display:flex; flex-direction:column; align-items:center; padding-top:4px; }
+
     /* Initiative business cards */
     .initiative-card { background:#fff; border:1px solid #e8dcc8; border-radius:6px; padding:20px; margin-bottom:16px; }
     .initiative-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px; }
@@ -627,17 +637,32 @@ function renderInternalProjects(projects, scheduleData, materials, container) {
 
   const ochreAvg = ochre ? `${Math.round(ochre.townhouses.summary.avgCompletion * 100)}% avg construction` : '';
   html.push(`<details class="sub-section" open>
-    <summary><span>Budget Charts</span><span class="sub-summary-peek">Savings vs sanctioned &nbsp;·&nbsp; Budget split by project${ochreAvg ? ' &nbsp;·&nbsp; Ochre ' + ochreAvg : ''}</span></summary>`);
-  html.push(`<div style="padding:8px 14px 14px"><div class="charts-row">
-    <div class="chart-wrap" style="margin-bottom:0">
-      <div class="chart-title">Savings / Overrun vs Sanctioned Budget (₹ Cr)</div>
-      <canvas id="chart-savings" height="140"></canvas>
-    </div>
-    <div class="donut-wrap">
-      <div class="chart-title" style="align-self:flex-start">Budget Split</div>
-      <canvas id="chart-donut" width="168" height="168"></canvas>
-    </div>
-  </div></div></details>`);
+    <summary><span>Budget Overview</span><span class="sub-summary-peek">Spend utilisation &nbsp;·&nbsp; Impact vs sanctioned</span></summary>`);
+  html.push(`<div style="padding:8px 14px 14px">`);
+  html.push(`<div class="budget-overview-grid">`);
+  // Left: per-project utilisation bars
+  html.push(`<div class="budget-bars-col">`);
+  projects.forEach((p, i) => {
+    const { originalBudget, totalSpent, totalSavings } = calcs[i];
+    const utilPct = Math.min(Math.round((totalSpent / originalBudget) * 100), 100);
+    const impactTxt = totalSavings <= 0 ? `<span style="color:#5a9a5a">−₹${Math.abs(totalSavings).toFixed(2)} Cr saved</span>` : `<span style="color:#c0392b">+₹${totalSavings.toFixed(2)} Cr over</span>`;
+    const barColor = p.status === 'green' ? '#5a9a5a' : p.status === 'amber' ? '#d4a84b' : '#c0392b';
+    html.push(`<div class="bov-row">
+      <div class="bov-name">${p.name}</div>
+      <div class="bov-track"><div class="bov-fill" style="width:${utilPct}%;background:${barColor}"></div></div>
+      <div class="bov-nums"><span>₹${fmt(totalSpent)} / ₹${fmt(originalBudget)} Cr</span>${impactTxt}</div>
+    </div>`);
+  });
+  // Saarang placeholder
+  html.push(`<div class="bov-row" style="opacity:.4">
+    <div class="bov-name">Saarang</div>
+    <div class="bov-track"><div class="bov-fill" style="width:0%;background:#d4c4a0"></div></div>
+    <div class="bov-nums"><span style="color:#b8a888">Data not yet available</span></div>
+  </div>`);
+  html.push(`</div>`);
+  // Right: compact donut
+  html.push(`<div class="bov-donut-col"><div class="chart-title" style="font-size:10px;margin-bottom:8px">Budget Split</div><canvas id="chart-donut" width="140" height="140"></canvas></div>`);
+  html.push(`</div></div></details>`);
 
   const healthDots = projects.map((p, i) => {
     const h = getHealth(p, i);
@@ -668,6 +693,21 @@ function renderInternalProjects(projects, scheduleData, materials, container) {
         </div>
       </div>`);
   });
+  html.push(`
+    <div class="health-card" style="opacity:.45">
+      <div class="health-card-top">
+        <div class="health-badge" style="background:#d4c4a0"></div>
+        <div>
+          <div class="health-card-name">Saarang</div>
+          <div class="health-card-client">Coming soon</div>
+        </div>
+      </div>
+      <div class="health-metrics">
+        <div class="health-metric"><div class="health-metric-val">—</div><div class="health-metric-label">Sanctioned</div></div>
+        <div class="health-metric"><div class="health-metric-val">—</div><div class="health-metric-label">Spent</div></div>
+        <div class="health-metric"><div class="health-metric-val">—</div><div class="health-metric-label">Const %</div></div>
+      </div>
+    </div>`);
   html.push(`</div></div></details></div>`);
 
   // 2. Project Tabs
@@ -853,26 +893,6 @@ function renderInternalProjects(projects, scheduleData, materials, container) {
     options: { responsive:false, cutout:'62%', plugins: { legend:{position:'bottom',labels:{boxWidth:10,font:{size:10},padding:8}}, datalabels:{formatter:(v,ctx)=>{const t=ctx.dataset.data.reduce((a,b)=>a+b,0);return Math.round(v/t*100)+'%';},color:'#fff',font:{size:10,weight:'700'}} } },
   });
 
-  const savingsData = projects.map(p => +((p.financial.building?.impactCr||0)+(p.financial.infra?.impactCr||0)).toFixed(2));
-  new Chart(document.getElementById('chart-savings'), {
-    type: 'bar',
-    data: { labels, datasets: [{ data:savingsData, backgroundColor:savingsData.map(v=>v<=0?'#5a9a5a':'#c0392b'), borderRadius:4 }] },
-    options: {
-      responsive:true, layout:{padding:{top:24}},
-      plugins: {
-        legend:{display:false},
-        datalabels:{
-          anchor:ctx=>ctx.dataset.data[ctx.dataIndex]<=0?'start':'end',
-          align:ctx=>ctx.dataset.data[ctx.dataIndex]<=0?'start':'end',
-          offset:4,
-          formatter:v=>(v<=0?'−':'+')+'₹'+Math.abs(v).toFixed(2)+' Cr',
-          font:{size:11,weight:'700'},
-          color:ctx=>ctx.dataset.data[ctx.dataIndex]<=0?'#5a9a5a':'#c0392b',
-        },
-      },
-      scales:{ y:{grid:{color:'#f0e8d8'},ticks:{callback:v=>'₹'+v+' Cr'}}, x:{grid:{display:false}} },
-    },
-  });
 
   initTabs(container);
   applyRole(localStorage.getItem('kpi-role') || 'mgmt');
